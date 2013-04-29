@@ -1,32 +1,30 @@
 package org.newdawn.test.core;
 
-import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 
 public class OpenGLTest implements ApplicationListener {
-	Texture texture;
-	SpriteBatch batch;
+	
+	private Camera camera;
 	
 	@Override
 	public void create () {
-		texture = new Texture(Gdx.files.internal("libgdx-logo.png"));
-		batch = new SpriteBatch();
 	}
 
 	@Override
 	public void resize (int width, int height) {
+		Gdx.gl20.glClearColor(0, 0, 0, 1);
+		
+		camera = new PerspectiveCamera(60, width, height);
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 0);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(texture, 100, 100);
-		batch.end();
+		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		camera.update();
 	}
 
 	@Override
