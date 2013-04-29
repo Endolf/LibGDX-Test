@@ -1,0 +1,8 @@
+.settings
+.classpath
+.project
+target/
+/android/project.properties
+/android/bin/
+/android/gen/
+/android/libs/
