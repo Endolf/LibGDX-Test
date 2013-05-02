@@ -1,7 +1,11 @@
 package org.newdawn.test.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
@@ -12,12 +16,16 @@ public class OpenGLTest implements ApplicationListener {
 	private Camera camera;
 	private Cube cube;
 	private float runTime;
+	private List<Renderable> renderables = new ArrayList<Renderable>();
 	
 	@Override
 	public void create () {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		Gdx.app.debug("init", "In create");
 		cube = new Cube();
+		
+		renderables.add(cube);
+		renderables.add(new Cube());
 	}
 
 	@Override
@@ -28,7 +36,7 @@ public class OpenGLTest implements ApplicationListener {
 		Gdx.gl20.glDepthFunc(GL20.GL_LESS);
 		
 		camera = new PerspectiveCamera(67, width, height);
-		camera.position.set(0,0,10);
+		camera.translate(10,10,10);
 		camera.lookAt(0,0,0);
 		camera.update();
 	}
@@ -39,11 +47,13 @@ public class OpenGLTest implements ApplicationListener {
 		
 		runTime += Gdx.graphics.getDeltaTime();
 		
-        float deltaTime =  (runTime % 2) / 2;
-        float offset = (float) Math.sin(deltaTime * 2 * Math.PI);
-        cube.setPosition(offset,0,0);
+        float deltaTime =  (runTime % 2) / 2 ;
+        float offset = (float) Math.sin(deltaTime * (2 * Math.PI));
+        cube.setPosition(offset * 3,0,-3);
         
-        cube.render(camera.view, camera.projection);
+        for(Renderable renderable : renderables) {
+        	renderable.render(camera);
+        }
 	}
 
 	@Override

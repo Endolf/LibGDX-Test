@@ -1,6 +1,7 @@
 package org.newdawn.test.core;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
@@ -9,7 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
-public class Cube {
+public class Cube implements Renderable {
 	private Mesh mesh;
 
 	private final String vertexShaderCode =
@@ -27,6 +28,7 @@ public class Cube {
 	
 	private ShaderProgram shader;
 	
+	private Matrix4 mvpMatrix = new Matrix4();
 	private Matrix4 position = new Matrix4();
 	private Vector3 translation = new Vector3();
 	private float[] rotation = {0,0,1,0};
@@ -52,19 +54,18 @@ public class Cube {
 		mesh.bind(shader);
 	}
 	
-	public void render(Matrix4 viewMatrix, Matrix4 projectionMatrix) {
+	public void render(Camera camera) {
 		Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
 		
 		position.idt();
 		position.translate(translation);
 		position.rotate(rotation[1], rotation[2], rotation[3], rotation[0]);
-		
-		position.mul(projectionMatrix);
-		position.mul(viewMatrix);
+
+		mvpMatrix.set(camera.projection).mul(camera.view).mul(position);
 		
 		shader.begin();
 		shader.setUniform4fv("vColor", colour, 0, 4);
-		shader.setUniformMatrix("uMVPMatrix", position, false);
+		shader.setUniformMatrix("uMVPMatrix", mvpMatrix, false);
 		mesh.render(shader, GL20.GL_TRIANGLE_STRIP);
 		shader.end();
 	}
