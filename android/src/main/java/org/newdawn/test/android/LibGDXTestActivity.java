@@ -14,6 +14,9 @@ public class LibGDXTestActivity extends AndroidApplication {
        super.onCreate(savedInstanceState);
        AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
        config.useGL20 = true;
+       config.useWakelock = true;
+       config.useAccelerometer = false;
+       config.useCompass = false;
        initialize(new OpenGLTest(), config);
    }
 }
