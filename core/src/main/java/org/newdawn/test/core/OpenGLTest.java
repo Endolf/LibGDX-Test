@@ -78,7 +78,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
         cube.setPosition(offset * 3,0,-3);
         
         for(Renderable renderable : renderables) {
-        	renderable.render(camera);
+        	renderable.render(camera.view, camera.projection);
         }
 	}
 

@@ -1,7 +1,6 @@
 package org.newdawn.test.core;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
@@ -54,14 +53,14 @@ public class Cube implements Renderable {
 		mesh.bind(shader);
 	}
 	
-	public void render(Camera camera) {
+	public void render(Matrix4 viewMatrix, Matrix4 projectionMatrix) {
 		Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
 		
 		position.idt();
 		position.translate(translation);
 		position.rotate(rotation[1], rotation[2], rotation[3], rotation[0]);
 
-		mvpMatrix.set(camera.projection).mul(camera.view).mul(position);
+		mvpMatrix.set(projectionMatrix).mul(viewMatrix).mul(position);
 		
 		shader.begin();
 		shader.setUniform4fv("vColor", colour, 0, 4);
