@@ -29,7 +29,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		renderables.add(new Triangle());
 		
 		camera = new PerspectiveCamera(67, 1, 1);
-		camera.near = 3;
+		camera.near = 1;
 		camera.far = 3000;
 		
 		Gdx.input.setInputProcessor(this);
@@ -58,7 +58,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		if(cameraXRot > 90) cameraXRot = 90;
 		if(cameraXRot < -90) cameraXRot = -90;
 		
-		camera.position.set(0,0,5);
+		camera.position.set(0,0,7.1f);
 		camera.position.rotate(cameraXRot, 1, 0, 0);
 		camera.position.rotate(cameraYRot, 0, 1, 0);
 		
