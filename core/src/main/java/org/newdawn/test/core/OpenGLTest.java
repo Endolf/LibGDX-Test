@@ -73,7 +73,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		
 		runTime += Gdx.graphics.getDeltaTime();
 		
-        float deltaTime =  (runTime % 2) / 2 ;
+        double deltaTime =  (runTime % 2) / 2 ;
         float offset = (float) Math.sin(deltaTime * (2 * Math.PI));
         cube.setPosition(offset * 3,0,-3);
         
