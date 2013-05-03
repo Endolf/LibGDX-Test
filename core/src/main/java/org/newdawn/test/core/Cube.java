@@ -73,4 +73,10 @@ public class Cube implements Renderable {
 	public void setPosition(float x, float y, float z) {
 		translation.set(x, y, z);
 	}
+
+	@Override
+	public void dispose() {
+		shader.dispose();
+		mesh.dispose();
+	}
 }

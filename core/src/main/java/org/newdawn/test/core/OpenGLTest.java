@@ -92,6 +92,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 
 	@Override
 	public void dispose () {
+        for(Renderable renderable : renderables) {
+        	renderable.dispose();
+        }
 	}
 
 	@Override
