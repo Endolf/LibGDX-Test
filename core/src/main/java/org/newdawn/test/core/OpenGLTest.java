@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -76,8 +77,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	public void render () {
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		
-		runtime += Gdx.graphics.getDeltaTime();
-		float animationRatio = runtime/2f;//(runtime % 2) / 2f;
+//		runtime += Gdx.graphics.getDeltaTime();
+		float animationRatio = (TimeUtils.millis() % 2000)/2000.0f;
+//		float animationRatio = runtime/2f;//(runtime % 2) / 2f;
 		
 		float offset = MathUtils.sin(animationRatio * (MathUtils.PI2));
         cube.setPosition(offset * 3f,0,-3);

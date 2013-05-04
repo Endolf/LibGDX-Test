@@ -9,7 +9,6 @@ public class OpenGLTestDesktop {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.useGL20 = true;
-		config.vSyncEnabled = false;
 		config.title = "LibGDX Test";
 		config.samples = 2;
 		new LwjglApplication(new OpenGLTest(), config);
