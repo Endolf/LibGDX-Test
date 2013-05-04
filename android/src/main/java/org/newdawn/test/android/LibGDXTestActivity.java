@@ -17,6 +17,7 @@ public class LibGDXTestActivity extends AndroidApplication {
        config.useWakelock = true;
        config.useAccelerometer = false;
        config.useCompass = false;
+       config.numSamples = 2;
        initialize(new OpenGLTest(), config);
    }
 }
