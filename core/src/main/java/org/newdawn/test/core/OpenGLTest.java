@@ -18,9 +18,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Camera camera;
 	private float cameraXRot = -45,cameraYRot = 45;
 	private Cube cube;
-	private float runTime;
 	private List<Renderable> renderables = new ArrayList<Renderable>();
 	private FPSLogger fpsLogger;
+	private float runtime;
 	
 	@Override
 	public void create () {
@@ -76,11 +76,12 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	public void render () {
 		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		
-//		runTime += Gdx.graphics.getDeltaTime();
-		runTime = System.currentTimeMillis() % 2000;
+		runtime += Gdx.graphics.getDeltaTime();
+		float animationRatio = runtime/2f;//(runtime % 2) / 2f;
 		
-		float offset = MathUtils.sin((runTime / 2000f) * (MathUtils.PI2));
-        cube.setPosition(offset * 3,0,-3);
+		float offset = MathUtils.sin(animationRatio * (MathUtils.PI2));
+        cube.setPosition(offset * 3f,0,-3);
+        cube.setRotation(animationRatio * 360, 1, 0, 0);
         
         for(Renderable renderable : renderables) {
         	renderable.render(camera.view, camera.projection);
@@ -106,37 +107,37 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 
 	@Override
 	public boolean keyDown(int keycode) {
-		Gdx.app.debug("touch", "keyDown: " + keycode);
+//		Gdx.app.debug("touch", "keyDown: " + keycode);
 		return false;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		Gdx.app.debug("touch", "keyUp: " + keycode);
+//		Gdx.app.debug("touch", "keyUp: " + keycode);
 		return false;
 	}
 
 	@Override
 	public boolean keyTyped(char character) {
-		Gdx.app.debug("touch", "keyTyped: \"" + character + "\"");
+//		Gdx.app.debug("touch", "keyTyped: \"" + character + "\"");
 		return false;
 	}
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		Gdx.app.debug("touch", "touchDown: " + pointer + ", " + button);
+//		Gdx.app.debug("touch", "touchDown: " + pointer + ", " + button);
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		Gdx.app.debug("touch", "touchUp: " + pointer + ", " + button);
+//		Gdx.app.debug("touch", "touchUp: " + pointer + ", " + button);
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		Gdx.app.debug("touch", "touchDragged: " + pointer + ", x: " + Gdx.app.getInput().getDeltaX(pointer) + ",y: " + Gdx.app.getInput().getDeltaY(pointer));
+//		Gdx.app.debug("touch", "touchDragged: " + pointer + ", x: " + Gdx.app.getInput().getDeltaX(pointer) + ",y: " + Gdx.app.getInput().getDeltaY(pointer));
 		rotateCamera(-Gdx.app.getInput().getDeltaY(pointer),-Gdx.app.getInput().getDeltaX(pointer));
 		return false;
 	}
@@ -149,7 +150,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 
 	@Override
 	public boolean scrolled(int amount) {
-		Gdx.app.debug("touch", "scrolled: ");
+//		Gdx.app.debug("touch", "scrolled: ");
 		return false;
 	}
 }

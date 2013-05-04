@@ -79,6 +79,13 @@ public abstract class Shape implements Renderable {
 	public void setPosition(float x, float y, float z) {
 		translation.set(x, y, z);
 	}
+	
+	public void setRotation(float angle, float x, float y, float z) { 
+		rotation[0] = angle;
+		rotation[1] = x;
+		rotation[2] = y;
+		rotation[3] = z;
+	}
 
 	@Override
 	public void dispose() {
