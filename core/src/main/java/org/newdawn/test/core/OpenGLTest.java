@@ -37,16 +37,17 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		
 		Gdx.input.setInputProcessor(this);
 		
+		Gdx.gl20.glClearColor(0, 0, 0, 1);
+		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
+		Gdx.gl20.glDepthFunc(GL20.GL_LESS);
+		
 		fpsLogger = new FPSLogger();
 	}
 
 	@Override
 	public void resize (int width, int height) {
 		Gdx.app.debug("init", "In resize");
-		Gdx.gl20.glClearColor(0, 0, 0, 1);
-		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
-		Gdx.gl20.glDepthFunc(GL20.GL_LESS);
-		
+
 		camera.viewportWidth = width;
 		camera.viewportHeight = height;
 		
