@@ -3,6 +3,8 @@ package org.newdawn.test.core;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -33,6 +35,7 @@ public abstract class Shape implements Renderable {
 	private float[] rotation = {0,0,1,0};
 
 	private float[] colour;
+	private Texture texture;
 
 	private boolean twoSided;
 	
@@ -72,7 +75,7 @@ public abstract class Shape implements Renderable {
 		shader.begin();
 		shader.setUniform4fv("vColor", colour, 0, 4);
 		shader.setUniformMatrix("uMVPMatrix", mvpMatrix, false);
-		mesh.render(shader, GL20.GL_TRIANGLE_STRIP);
+		mesh.render(shader, GL20.GL_TRIANGLES);
 		shader.end();
 	}
 	
@@ -90,6 +93,7 @@ public abstract class Shape implements Renderable {
 	@Override
 	public void dispose() {
 		shader.dispose();
+		if(texture!=null) texture.dispose();
 		mesh.dispose();
 	}
 }
