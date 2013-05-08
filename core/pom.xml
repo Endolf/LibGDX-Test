@@ -30,8 +30,11 @@
 
 		<resources>
 			<!-- include the source files in our main jar for use by GWT -->
-			<resource>
+			<resource>			    
 				<directory>${project.build.sourceDirectory}</directory>
+			</resource>
+			<resource>
+				<directory>assets</directory>
 			</resource>
 		</resources>
 	</build>

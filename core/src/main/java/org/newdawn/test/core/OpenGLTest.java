@@ -80,8 +80,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		float animationRatio = (TimeUtils.millis() % 2000)/2000.0f;
 		
 		float offset = MathUtils.sin(animationRatio * (MathUtils.PI2));
-        cube.setPosition(offset * 3f,0,-3);
-        cube.setRotation(animationRatio * 360, 1, 0, 0);
+//        cube.setPosition(offset * 3f,0,-3);
+//        cube.setRotation(animationRatio * 360, 1, 0, 0);
         
         for(Renderable renderable : renderables) {
         	renderable.render(camera.view, camera.projection);
@@ -92,14 +92,17 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 
 	@Override
 	public void pause () {
+		Gdx.app.debug("init", "In pause");
 	}
 
 	@Override
 	public void resume () {
+		Gdx.app.debug("init", "In resume");
 	}
 
 	@Override
 	public void dispose () {
+		Gdx.app.debug("init", "In dispose");
         for(Renderable renderable : renderables) {
         	renderable.dispose();
         }
