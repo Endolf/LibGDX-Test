@@ -46,6 +46,6 @@ public class Cube extends Shape {
 				20, 22, 21,
 				20, 23, 22, 
 						}, 
-			 false, new float[] {1,0,0,1}, "nd-logo.png");
+			 false, new float[] {1,1,1,1}, "nd-logo.png");
 	}
 }

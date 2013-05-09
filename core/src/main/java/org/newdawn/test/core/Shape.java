@@ -44,10 +44,11 @@ public abstract class Shape implements Renderable {
 		"#ifdef GL_ES\n" +
 		"precision mediump float;\n" +
 		"#endif\n" +
+		"uniform vec4 vColor;" + 
 		"uniform sampler2D texture0;" +
 		"varying vec2 v_texCoord0;" +	
 		"void main() {" + 
-		"  gl_FragColor = texture2D(texture0, v_texCoord0);" + 
+		"  gl_FragColor = texture2D(texture0, v_texCoord0) * vColor;" + 
 		"}";
 
 	private ShaderProgram shader;
@@ -135,9 +136,8 @@ public abstract class Shape implements Renderable {
 			texture.bind();
 		}
 		shader.begin();
-		if(texture==null) {
-			shader.setUniform4fv("vColor", colour, 0, 4);
-		} else {
+		shader.setUniform4fv("vColor", colour, 0, 4);
+		if(texture!=null) {
 			shader.setUniformf("texture0", 0);
 		}
 		shader.setUniformMatrix("uMVPMatrix", mvpMatrix, false);
