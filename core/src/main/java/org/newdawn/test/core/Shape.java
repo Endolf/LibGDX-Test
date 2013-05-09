@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.graphics.glutils.MipMapGenerator;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -22,8 +21,10 @@ public abstract class Shape implements Renderable {
 		"  gl_Position = uMVPMatrix * vPosition;" + 
 		"}";
 
-	private final String fragmentShaderCode = 
-//		"precision mediump float;" +
+	private final String fragmentShaderCode =
+		"#ifdef GL_ES\n" +
+		"precision mediump float;\n" +
+		"#endif\n" +
 		"uniform vec4 vColor;" + 
 		"void main() {" + 
 		"  gl_FragColor = vColor;" + 
@@ -40,7 +41,9 @@ public abstract class Shape implements Renderable {
 		"}";
 
 	private final String fragmentShaderCodeWithTexture = 
-//		"precision mediump float;" +
+		"#ifdef GL_ES\n" +
+		"precision mediump float;\n" +
+		"#endif\n" +
 		"uniform sampler2D texture0;" +
 		"varying vec2 v_texCoord0;" +	
 		"void main() {" + 
