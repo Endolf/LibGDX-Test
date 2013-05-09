@@ -30,6 +30,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		
 		renderables.add(cube);
 		renderables.add(new Triangle());
+		Shape square = new Square();
+		square.setPosition(0, 3, 0);
+		renderables.add(square);
 		
 		camera = new PerspectiveCamera(67, 1, 1);
 		camera.near = 1;
