@@ -47,7 +47,6 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		renderables.add(new Triangle(false));
 		square = new Square(true, "star.png");
 		square.setPosition(0, 3, 0);
-		renderables.add(square);
 		
 	}
 
@@ -93,6 +92,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
         for(Renderable renderable : renderables) {
         	renderable.render(camera.view, camera.projection);
         }
+        
+        square.render(camera.view, camera.projection);
         
         fpsLogger.log();
 	}

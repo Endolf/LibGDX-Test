@@ -112,8 +112,8 @@ public abstract class Shape implements Renderable {
 
 		mesh.setIndices(indecies);
 		
-		texture = new Texture(Gdx.files.internal(textureLocation));
-		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		texture = new Texture(Gdx.files.internal(textureLocation), true);
+		texture.setFilter(TextureFilter.MipMapLinearNearest, TextureFilter.Nearest);
 		
 		String finalVertexShaderCode = "#define TEXTURED\n";
 		String finalFragmentShaderCode = "#define TEXTURED\n";
