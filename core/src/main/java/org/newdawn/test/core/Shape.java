@@ -20,6 +20,7 @@ public abstract class Shape implements Renderable {
 		"uniform mat4 uProjectionMatrix;" +
 		"attribute vec4 aPosition;" +
 		"void main() {" +
+//		"  gl_Position = uProjectionMatrix * (uViewMatrix * uModelMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(aPosition.x, aPosition.y, 0.0, 0.0));" +
 		"  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;" +
 		"}";
 
