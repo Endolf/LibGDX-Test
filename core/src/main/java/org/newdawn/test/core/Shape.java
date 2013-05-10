@@ -15,45 +15,48 @@ public abstract class Shape implements Renderable {
 	private Mesh mesh;
 
 	private final String vertexShaderCode =
-		"uniform mat4 uMVPMatrix;" +
-		"attribute vec4 vPosition;" +
+		"uniform mat4 uModelMatrix;" +
+		"uniform mat4 uViewMatrix;" +
+		"uniform mat4 uProjectionMatrix;" +
+		"attribute vec4 aPosition;" +
 		"void main() {" +
-		"  gl_Position = uMVPMatrix * vPosition;" + 
+		"  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;" +
 		"}";
 
 	private final String fragmentShaderCode =
 		"#ifdef GL_ES\n" +
 		"precision mediump float;\n" +
 		"#endif\n" +
-		"uniform vec4 vColor;" + 
+		"uniform vec4 uColor;" + 
 		"void main() {" + 
-		"  gl_FragColor = vColor;" + 
+		"  gl_FragColor = uColor;" + 
 		"}";
 	
-	private final String vertexShaderCodeWithTexture =
-		"uniform mat4 uMVPMatrix;" +
-		"attribute vec4 vPosition;" +
-		"attribute vec2 texCoord0;" +
-		"varying vec2 v_texCoord0;" +
+	protected String vertexShaderCodeWithTexture =
+		"uniform mat4 uModelMatrix;" +
+		"uniform mat4 uViewMatrix;" +
+		"uniform mat4 uProjectionMatrix;" +
+		"attribute vec4 aPosition;" +
+		"attribute vec2 aTexCoord0;" +
+		"varying vec2 vTexCoord0;" +
 		"void main() {" +
-		"  gl_Position = uMVPMatrix * vPosition;" +
-		"  v_texCoord0 = texCoord0;" +
+		"  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;" +
+		"  vTexCoord0 = aTexCoord0;" +
 		"}";
 
 	private final String fragmentShaderCodeWithTexture = 
 		"#ifdef GL_ES\n" +
 		"precision mediump float;\n" +
 		"#endif\n" +
-		"uniform vec4 vColor;" + 
-		"uniform sampler2D texture0;" +
-		"varying vec2 v_texCoord0;" +	
+		"uniform vec4 uColor;" + 
+		"uniform sampler2D uTexture0;" +
+		"varying vec2 vTexCoord0;" +	
 		"void main() {" + 
-		"  gl_FragColor = texture2D(texture0, v_texCoord0) * vColor;" + 
+		"  gl_FragColor = texture2D(uTexture0, vTexCoord0) * uColor;" + 
 		"}";
 
 	private ShaderProgram shader;
 	
-	private Matrix4 mvpMatrix = new Matrix4();
 	private Matrix4 position = new Matrix4();
 	private Vector3 translation = new Vector3();
 	private float[] rotation = {0,0,1,0};
@@ -64,7 +67,7 @@ public abstract class Shape implements Renderable {
 	private boolean twoSided;
 	
 	public Shape(float[] vertecies, short[] indecies, boolean twoSided, float[] colour) {
-		mesh = new Mesh(true, vertecies.length / 3, indecies.length, new VertexAttribute(Usage.Position, 3, "vPosition"));
+		mesh = new Mesh(true, vertecies.length / 3, indecies.length, new VertexAttribute(Usage.Position, 3, "aPosition"));
 
 		mesh.setVertices(vertecies);
 
@@ -73,7 +76,8 @@ public abstract class Shape implements Renderable {
 		shader = new ShaderProgram(vertexShaderCode, fragmentShaderCode);		
 		
 		if(!shader.isCompiled()) {
-			Gdx.app.error("shader", "Failed to compile shader");
+			Gdx.app.error("shader", "Failed to compile shape shader");
+			Gdx.app.log("opengl", shader.getLog());
 			Gdx.app.exit();
 		}
 
@@ -96,7 +100,7 @@ public abstract class Shape implements Renderable {
 			allVertexData[i*5+4] = textureCoords[i*2+1];
 		}
 		
-		mesh = new Mesh(true, numVertices, indecies.length, new VertexAttribute(Usage.Position, 3, "vPosition"), new VertexAttribute(Usage.TextureCoordinates, 2, "texCoord0"));
+		mesh = new Mesh(true, numVertices, indecies.length, new VertexAttribute(Usage.Position, 3, "aPosition"), new VertexAttribute(Usage.TextureCoordinates, 2, "aTexCoord0"));
 
 		mesh.setVertices(allVertexData);
 
@@ -108,7 +112,8 @@ public abstract class Shape implements Renderable {
 		shader = new ShaderProgram(vertexShaderCodeWithTexture, fragmentShaderCodeWithTexture);		
 		
 		if(!shader.isCompiled()) {
-			Gdx.app.error("shader", "Failed to compile shader");
+			Gdx.app.error("shader", "Failed to compile shape shader with texture");
+			Gdx.app.log("opengl", shader.getLog());
 			Gdx.app.exit();
 		}
 
@@ -125,28 +130,41 @@ public abstract class Shape implements Renderable {
 			Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
 		}
 		
-		position.idt();
-		position.translate(translation);
-		position.rotate(rotation[1], rotation[2], rotation[3], rotation[0]);
-
-		mvpMatrix.set(projectionMatrix).mul(viewMatrix).mul(position);
-		
 		if(texture!=null) {
 			Gdx.gl20.glActiveTexture(GL20.GL_TEXTURE0);
 			texture.bind();
 		}
 		shader.begin();
-		shader.setUniform4fv("vColor", colour, 0, 4);
+		shader.setUniform4fv("uColor", colour, 0, 4);
 		if(texture!=null) {
-			shader.setUniformf("texture0", 0);
+			shader.setUniformf("uTexture0", 0);
 		}
-		shader.setUniformMatrix("uMVPMatrix", mvpMatrix, false);
+		shader.setUniformMatrix("uProjectionMatrix", projectionMatrix, false);
+		shader.setUniformMatrix("uViewMatrix", viewMatrix, false);
+		shader.setUniformMatrix("uModelMatrix", position, false);
 		mesh.render(shader, GL20.GL_TRIANGLES);
 		shader.end();
 	}
+
+	private void updatePosition() {
+		position.idt();
+		position.translate(translation);
+		position.rotate(rotation[1], rotation[2], rotation[3], rotation[0]);
+	}
 	
+	public void setPosition(Matrix4 newPosition) {
+		position.set(newPosition);
+	}
+	 
 	public void setPosition(float x, float y, float z) {
 		translation.set(x, y, z);
+		updatePosition();
+	}
+	
+	public Vector3 getPosition(Vector3 vec) {
+		if(vec == null) vec = new Vector3();
+		vec.set(translation);
+		return vec;
 	}
 	
 	public void setRotation(float angle, float x, float y, float z) { 
@@ -154,6 +172,7 @@ public abstract class Shape implements Renderable {
 		rotation[1] = x;
 		rotation[2] = y;
 		rotation[3] = z;
+		updatePosition();
 	}
 
 	@Override

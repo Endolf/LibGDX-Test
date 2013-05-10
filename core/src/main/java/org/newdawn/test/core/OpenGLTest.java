@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
@@ -19,8 +21,13 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Camera camera;
 	private float cameraXRot = -45,cameraYRot = 45;
 	private Cube cube;
+	private Shape square;
 	private List<Renderable> renderables = new ArrayList<Renderable>();
 	private FPSLogger fpsLogger;
+//	private Vector3 tempVector = new Vector3();
+//	private Vector3 tempVector2 = new Vector3();
+//	private Vector3 tempVector3 = new Vector3();
+//	private Matrix4 tempMatrix = new Matrix4();
 	
 	@Override
 	public void create () {
@@ -30,7 +37,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		
 		renderables.add(cube);
 		renderables.add(new Triangle());
-		Shape square = new Square();
+		square = new Square();
 		square.setPosition(0, 3, 0);
 		renderables.add(square);
 		
@@ -85,7 +92,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		float offset = MathUtils.sin(animationRatio * (MathUtils.PI2));
         cube.setPosition(offset * 3f,0,-3);
         cube.setRotation(animationRatio * 360, 1, 0, 0);
-        
+
         for(Renderable renderable : renderables) {
         	renderable.render(camera.view, camera.projection);
         }
