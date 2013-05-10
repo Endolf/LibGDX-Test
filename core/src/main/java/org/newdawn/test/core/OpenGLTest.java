@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
@@ -24,34 +22,33 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Shape square;
 	private List<Renderable> renderables = new ArrayList<Renderable>();
 	private FPSLogger fpsLogger;
-//	private Vector3 tempVector = new Vector3();
-//	private Vector3 tempVector2 = new Vector3();
-//	private Vector3 tempVector3 = new Vector3();
-//	private Matrix4 tempMatrix = new Matrix4();
 	
 	@Override
 	public void create () {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		Gdx.app.debug("init", "In create");
-		cube = new Cube();
-		
-		renderables.add(cube);
-		renderables.add(new Triangle());
-		square = new Square();
-		square.setPosition(0, 3, 0);
-		renderables.add(square);
-		
-		camera = new PerspectiveCamera(67, 1, 1);
-		camera.near = 1;
-		camera.far = 3000;
-		
-		Gdx.input.setInputProcessor(this);
 		
 		Gdx.gl20.glClearColor(0, 0, 0, 1);
 		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.gl20.glDepthFunc(GL20.GL_LESS);
-		
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+		Gdx.input.setInputProcessor(this);
+
 		fpsLogger = new FPSLogger();
+
+		camera = new PerspectiveCamera(67, 1, 1);
+		camera.near = 1;
+		camera.far = 3000;
+
+		cube = new Cube();		
+		renderables.add(cube);
+		renderables.add(new Triangle(false));
+		square = new Square(true, "star.png");
+		square.setPosition(0, 3, 0);
+		renderables.add(square);
+		
 	}
 
 	@Override

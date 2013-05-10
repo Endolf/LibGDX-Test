@@ -14,47 +14,42 @@ import com.badlogic.gdx.math.Vector3;
 public abstract class Shape implements Renderable {
 	private Mesh mesh;
 
-	private final String vertexShaderCode =
-		"uniform mat4 uModelMatrix;" +
-		"uniform mat4 uViewMatrix;" +
-		"uniform mat4 uProjectionMatrix;" +
-		"attribute vec4 aPosition;" +
-		"void main() {" +
-//		"  gl_Position = uProjectionMatrix * (uViewMatrix * uModelMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(aPosition.x, aPosition.y, 0.0, 0.0));" +
-		"  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;" +
-		"}";
+	protected String vertexShaderCode =
+		"uniform mat4 uModelMatrix;\n" +
+		"uniform mat4 uViewMatrix;\n" +
+		"uniform mat4 uProjectionMatrix;\n" +
+		"attribute vec4 aPosition;\n" +
+		"#ifdef TEXTURED\n" +
+		"attribute vec2 aTexCoord0;\n" +
+		"varying vec2 vTexCoord0;\n" +
+		"#endif\n" +
+		"void main() {\n" +
+		"#ifdef BILLBOARD\n" +
+		"  gl_Position = uProjectionMatrix * (uViewMatrix * uModelMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(aPosition.x, aPosition.y, 0.0, 0.0));\n" +
+		"#else\n" + 
+		"  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;\n" +
+		"#endif\n" +
+		"#ifdef TEXTURED\n" +
+		"  vTexCoord0 = aTexCoord0;\n" +
+		"#endif\n" +
+		"}\n";
 
-	private final String fragmentShaderCode =
+	private final String fragmentShaderCode = 
 		"#ifdef GL_ES\n" +
 		"precision mediump float;\n" +
 		"#endif\n" +
-		"uniform vec4 uColor;" + 
-		"void main() {" + 
-		"  gl_FragColor = uColor;" + 
-		"}";
-	
-	protected String vertexShaderCodeWithTexture =
-		"uniform mat4 uModelMatrix;" +
-		"uniform mat4 uViewMatrix;" +
-		"uniform mat4 uProjectionMatrix;" +
-		"attribute vec4 aPosition;" +
-		"attribute vec2 aTexCoord0;" +
-		"varying vec2 vTexCoord0;" +
-		"void main() {" +
-		"  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;" +
-		"  vTexCoord0 = aTexCoord0;" +
-		"}";
-
-	private final String fragmentShaderCodeWithTexture = 
-		"#ifdef GL_ES\n" +
-		"precision mediump float;\n" +
+		"uniform vec4 uColor;\n" + 
+		"#ifdef TEXTURED\n" +
+		"uniform sampler2D uTexture0;\n" +
+		"varying vec2 vTexCoord0;\n" +	
 		"#endif\n" +
-		"uniform vec4 uColor;" + 
-		"uniform sampler2D uTexture0;" +
-		"varying vec2 vTexCoord0;" +	
-		"void main() {" + 
-		"  gl_FragColor = texture2D(uTexture0, vTexCoord0) * uColor;" + 
-		"}";
+		"void main() {\n" + 
+		"#ifdef TEXTURED\n" +
+		"  gl_FragColor = texture2D(uTexture0, vTexCoord0) * uColor;\n" +
+		"#else\n" + 
+		"  gl_FragColor = uColor;\n" +
+		"#endif\n" + 
+		"}\n";
 
 	private ShaderProgram shader;
 	
@@ -67,14 +62,24 @@ public abstract class Shape implements Renderable {
 
 	private boolean twoSided;
 	
-	public Shape(float[] vertecies, short[] indecies, boolean twoSided, float[] colour) {
+	public Shape(float[] vertecies, short[] indecies, boolean twoSided, float[] colour, boolean isBillboard) {
 		mesh = new Mesh(true, vertecies.length / 3, indecies.length, new VertexAttribute(Usage.Position, 3, "aPosition"));
 
 		mesh.setVertices(vertecies);
 
 		mesh.setIndices(indecies);
 		
-		shader = new ShaderProgram(vertexShaderCode, fragmentShaderCode);		
+		String finalVertexShaderCode = "";
+		String finalFragmentShaderCode = "";
+		if(isBillboard) {
+			finalVertexShaderCode += "#define BILLBOARD\n";
+			finalFragmentShaderCode += "#define BILLBOARD\n";
+		}
+		
+		finalVertexShaderCode += vertexShaderCode;
+		finalFragmentShaderCode += fragmentShaderCode;
+		
+		shader = new ShaderProgram(finalVertexShaderCode, finalFragmentShaderCode);		
 		
 		if(!shader.isCompiled()) {
 			Gdx.app.error("shader", "Failed to compile shape shader");
@@ -88,7 +93,7 @@ public abstract class Shape implements Renderable {
 		this.colour = colour;
 	}
 	
-	public Shape(float[] vertecies, float[] textureCoords, short[] indecies, boolean twoSided, float[] colour, String textureLocation) {
+	public Shape(float[] vertecies, float[] textureCoords, short[] indecies, boolean twoSided, float[] colour, String textureLocation, boolean isBillboard) {
 		int numVertices = vertecies.length / 3;
 		float[] allVertexData = new float[numVertices * 5];
 		
@@ -110,7 +115,17 @@ public abstract class Shape implements Renderable {
 		texture = new Texture(Gdx.files.internal(textureLocation));
 		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		
-		shader = new ShaderProgram(vertexShaderCodeWithTexture, fragmentShaderCodeWithTexture);		
+		String finalVertexShaderCode = "#define TEXTURED\n";
+		String finalFragmentShaderCode = "#define TEXTURED\n";
+		if(isBillboard) {
+			finalVertexShaderCode += "#define BILLBOARD\n";
+			finalFragmentShaderCode += "#define BILLBOARD\n";
+		}
+		
+		finalVertexShaderCode += vertexShaderCode;
+		finalFragmentShaderCode += fragmentShaderCode;
+
+		shader = new ShaderProgram(finalVertexShaderCode, finalFragmentShaderCode);		
 		
 		if(!shader.isCompiled()) {
 			Gdx.app.error("shader", "Failed to compile shape shader with texture");
