@@ -3,6 +3,7 @@ package org.newdawn.test.core;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttribute;
@@ -112,7 +113,7 @@ public abstract class Shape implements Renderable {
 
 		mesh.setIndices(indecies);
 		
-		texture = new Texture(Gdx.files.internal(textureLocation), true);
+		texture = new Texture(Gdx.files.internal(textureLocation), Format.RGBA8888, true);
 		texture.setFilter(TextureFilter.MipMapLinearNearest, TextureFilter.Nearest);
 		
 		String finalVertexShaderCode = "#define TEXTURED\n";
