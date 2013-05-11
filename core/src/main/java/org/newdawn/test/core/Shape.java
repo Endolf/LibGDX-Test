@@ -60,64 +60,82 @@ public abstract class Shape implements Renderable {
 
 	private float[] colour;
 	private Texture texture;
-
-	private boolean twoSided;
+	private float[] vertices;
+	private short[] indecies;
+	private boolean isTwoSided;
+	private boolean isBillboard;
+	private String textureLocation;
+	private float[] textureCoords;
 	
-	public Shape(float[] vertecies, short[] indecies, boolean twoSided, float[] colour, boolean isBillboard) {
-		mesh = new Mesh(true, vertecies.length / 3, indecies.length, new VertexAttribute(Usage.Position, 3, "aPosition"));
-
-		mesh.setVertices(vertecies);
-
-		mesh.setIndices(indecies);
-		
-		String finalVertexShaderCode = "";
-		String finalFragmentShaderCode = "";
-		if(isBillboard) {
-			finalVertexShaderCode += "#define BILLBOARD\n";
-			finalFragmentShaderCode += "#define BILLBOARD\n";
-		}
-		
-		finalVertexShaderCode += vertexShaderCode;
-		finalFragmentShaderCode += fragmentShaderCode;
-		
-		shader = new ShaderProgram(finalVertexShaderCode, finalFragmentShaderCode);		
-		
-		if(!shader.isCompiled()) {
-			Gdx.app.error("shader", "Failed to compile shape shader\n" + finalVertexShaderCode + "\n" + finalFragmentShaderCode);
-			Gdx.app.log("opengl", shader.getLog());
-			Gdx.app.exit();
-		}
-
-		mesh.bind(shader);
-		
-		this.twoSided = twoSided;
+	public Shape(float[] vertices, short[] indecies, boolean twoSided, float[] colour, boolean isBillboard) {
+		this.vertices = vertices;
+		this.indecies = indecies;
+		this.isTwoSided = twoSided;
 		this.colour = colour;
+		this.isBillboard = isBillboard;
+
+		initialise();
 	}
 	
-	public Shape(float[] vertecies, float[] textureCoords, short[] indecies, boolean twoSided, float[] colour, String textureLocation, boolean isBillboard) {
-		int numVertices = vertecies.length / 3;
-		float[] allVertexData = new float[numVertices * 5];
+	public Shape(float[] vertices, float[] textureCoords, short[] indecies, boolean twoSided, float[] colour, String textureLocation, boolean isBillboard) {
+		this.vertices = vertices;
+		this.indecies = indecies;
+		this.isTwoSided = twoSided;
+		this.colour = colour;
+		this.isBillboard = isBillboard;
+		this.textureLocation = textureLocation;
+		this.textureCoords = textureCoords;
+		
+		initialise();
+	}
+	
+	private void initialise() {
+		dispose();
+		
+		int numVertices = vertices.length / 3;
+		
+		int numDataTypes = 1;
+		if(textureCoords!=null) numDataTypes +=1;
+		int numDataItems = 3;
+		if(textureCoords!=null) numDataItems+=2;
+		
+		float[] allVertexData = new float[numVertices * numDataItems];
 		
 		for(int i=0;i<numVertices;i++) {
-			allVertexData[i*5] = vertecies[i*3];
-			allVertexData[i*5+1] = vertecies[i*3+1];
-			allVertexData[i*5+2] = vertecies[i*3+2];
+			int dataItem = i*numDataItems;
+			allVertexData[dataItem++] = vertices[i*3];
+			allVertexData[dataItem++] = vertices[i*3+1];
+			allVertexData[dataItem++] = vertices[i*3+2];
 			
-			allVertexData[i*5+3] = textureCoords[i*2];
-			allVertexData[i*5+4] = textureCoords[i*2+1];
+			if(textureCoords!=null) {
+				allVertexData[dataItem++] = textureCoords[i*2];
+				allVertexData[dataItem++] = textureCoords[i*2+1];
+			}
 		}
 		
-		mesh = new Mesh(true, numVertices, indecies.length, new VertexAttribute(Usage.Position, 3, "aPosition"), new VertexAttribute(Usage.TextureCoordinates, 2, "aTexCoord0"));
+		VertexAttribute[] vAttribs = new VertexAttribute[numDataTypes];
+		int dataItem = 0;
+		vAttribs[dataItem++] = new VertexAttribute(Usage.Position, 3, "aPosition");
+		if(textureCoords!=null) vAttribs[dataItem++] = new VertexAttribute(Usage.TextureCoordinates, 2, "aTexCoord0");
+		
+		mesh = new Mesh(true, numVertices, indecies.length, vAttribs);
 
 		mesh.setVertices(allVertexData);
 
 		mesh.setIndices(indecies);
 		
-		texture = new Texture(Gdx.files.internal(textureLocation), Format.RGBA8888, true);
-		texture.setFilter(TextureFilter.MipMapLinearNearest, TextureFilter.Nearest);
+		if(textureCoords!=null && textureLocation!=null) {
+			texture = new Texture(Gdx.files.internal(textureLocation), Format.RGBA8888, true);
+			texture.setFilter(TextureFilter.MipMapLinearNearest, TextureFilter.Nearest);
+		}
 		
-		String finalVertexShaderCode = "#define TEXTURED\n";
-		String finalFragmentShaderCode = "#define TEXTURED\n";
+		String finalVertexShaderCode = "";
+		String finalFragmentShaderCode = "";
+		
+		if(textureCoords!=null && textureLocation!=null) {
+			finalVertexShaderCode += "#define TEXTURED\n";
+			finalFragmentShaderCode += "#define TEXTURED\n";
+		}
 		if(isBillboard) {
 			finalVertexShaderCode += "#define BILLBOARD\n";
 			finalFragmentShaderCode += "#define BILLBOARD\n";
@@ -135,13 +153,10 @@ public abstract class Shape implements Renderable {
 		}
 
 		mesh.bind(shader);
-		
-		this.twoSided = twoSided;
-		this.colour = colour;
 	}
 	
 	public void render(Matrix4 viewMatrix, Matrix4 projectionMatrix) {
-		if(twoSided) {
+		if(isTwoSided) {
 			Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
 		} else {
 			Gdx.gl20.glEnable(GL20.GL_CULL_FACE);
@@ -194,8 +209,8 @@ public abstract class Shape implements Renderable {
 
 	@Override
 	public void dispose() {
-		shader.dispose();
+		if(shader!=null) shader.dispose();
 		if(texture!=null) texture.dispose();
-		mesh.dispose();
+		if(mesh!=null) mesh.dispose();
 	}
 }
