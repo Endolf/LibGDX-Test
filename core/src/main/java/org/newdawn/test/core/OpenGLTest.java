@@ -53,13 +53,17 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 			public int compare(Renderable o1, Renderable o2) {
 				float o2len2 = o2.getPosition(Vector3.tmp2).sub(camera.position).len2();
 				float o1len2 = o1.getPosition(Vector3.tmp).sub(camera.position).len2();
-				if(o2len2 < o1len2) return 1;
-				else if(o1len2 > o2len2) return -1;
-				else return 0;
+				if(o2len2 < o1len2) {
+					return -1;
+				} else if(o2len2 > o1len2) {
+					return 1;
+				} else {
+					return 0;
+				}
 			}
 		};
 		
-		cube = new Cube();		
+		cube = new Cube("nd-logo.png", false, new float[]{1,1,1,1});		
 		renderables.add(cube);
 		renderables.add(new Triangle(false));
 		square = new Square(true, "star.png");

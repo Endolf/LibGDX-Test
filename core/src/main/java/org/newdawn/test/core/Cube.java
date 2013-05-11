@@ -1,7 +1,7 @@
 package org.newdawn.test.core;
 
 public class Cube extends Shape {
-	public Cube() {
+	public Cube(String textureLocation, boolean isTwoSided, float[] colour) {
 		super(new float[] { -1f, -1f, -1f, -1f, -1f, 1f, 1f, -1f, 1f, 1f, -1f, -1f, -1f, 1f, -1f,
 				-1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, -1f, -1f, -1f, -1f, -1f, 1f, -1f, 1f, 1f, -1f,
 				1f, -1f, -1f, -1f, -1f, 1f, -1f, 1f, 1f, 1f, 1f, 1f, 1f, -1f, 1f, -1f, -1f, -1f,
@@ -46,6 +46,6 @@ public class Cube extends Shape {
 				20, 22, 21,
 				20, 23, 22, 
 						}, 
-			 false, new float[] {1,1,1,1}, "nd-logo.png", false);
+			isTwoSided, colour, textureLocation, false);
 	}
 }
