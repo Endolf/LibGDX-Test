@@ -28,6 +28,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Comparator<Renderable> depthComparator;
 	private FPSLogger fpsLogger;
 	
+	private Vector3 tempVector01 = new Vector3();
+	
 	@Override
 	public void create () {
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -51,8 +53,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 
 			@Override
 			public int compare(Renderable o1, Renderable o2) {
-				float o2len2 = o2.getPosition(Vector3.tmp2).sub(camera.position).len2();
-				float o1len2 = o1.getPosition(Vector3.tmp).sub(camera.position).len2();
+				float o2len2 = o2.getPosition(tempVector01).sub(camera.position).len2();
+				float o1len2 = o1.getPosition(tempVector01).sub(camera.position).len2();
 				if(o2len2 < o1len2) {
 					return -1;
 				} else if(o2len2 > o1len2) {
