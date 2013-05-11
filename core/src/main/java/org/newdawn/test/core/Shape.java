@@ -60,7 +60,7 @@ public abstract class Shape implements Renderable {
 		"  gl_FragColor = texture2D(uTexture0, vTexCoord0) * gl_FragColor;\n" +
 		"#endif\n" + 
 		"#ifdef NORMALS\n" +
-		"  gl_FragColor = gl_FragColor + vec4(vNormal, 1);\n" +
+		"  gl_FragColor = gl_FragColor + vec4(vNormal, gl_FragColor.a);\n" +
 		"#endif\n" +
 		"}\n";
 
