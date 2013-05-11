@@ -15,55 +15,6 @@ import com.badlogic.gdx.math.Vector3;
 public abstract class Shape implements Renderable {
 	private Mesh mesh;
 
-	protected String vertexShaderCode =
-		"uniform mat4 uModelMatrix;\n" +
-		"uniform mat4 uViewMatrix;\n" +
-		"uniform mat4 uProjectionMatrix;\n" +
-		"attribute vec4 aPosition;\n" +
-		"#ifdef TEXTURED\n" +
-		"attribute vec2 aTexCoord0;\n" +
-		"varying vec2 vTexCoord0;\n" +
-		"#endif\n" +
-		"#ifdef NORMALS\n" +
-		"attribute vec3 aNormal;\n" +
-		"varying vec3 vNormal;\n" +
-		"#endif\n" +
-		"void main() {\n" +
-		"#ifdef BILLBOARD\n" +
-		"  gl_Position = uProjectionMatrix * (uViewMatrix * uModelMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(aPosition.x, aPosition.y, 0.0, 0.0));\n" +
-		"#else\n" + 
-		"  gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;\n" +
-		"#endif\n" +
-		"#ifdef TEXTURED\n" +
-		"  vTexCoord0 = aTexCoord0;\n" +
-		"#endif\n" +
-		"#ifdef NORMALS\n" +
-		"  vNormal = aNormal;\n" +
-		"#endif\n" +
-		"}\n";
-
-	private final String fragmentShaderCode = 
-		"#ifdef GL_ES\n" +
-		"precision mediump float;\n" +
-		"#endif\n" +
-		"uniform vec4 uColor;\n" + 
-		"#ifdef TEXTURED\n" +
-		"uniform sampler2D uTexture0;\n" +
-		"varying vec2 vTexCoord0;\n" +	
-		"#endif\n" +
-		"#ifdef NORMALS\n" +
-		"varying vec3 vNormal;\n" +
-		"#endif\n" +
-		"void main() {\n" + 
-		"  gl_FragColor = uColor;\n" +
-		"#ifdef TEXTURED\n" +
-		"  gl_FragColor = texture2D(uTexture0, vTexCoord0) * gl_FragColor;\n" +
-		"#endif\n" + 
-		"#ifdef NORMALS\n" +
-		"  gl_FragColor = gl_FragColor + vec4(vNormal, gl_FragColor.a);\n" +
-		"#endif\n" +
-		"}\n";
-
 	private ShaderProgram shader;
 	
 	private Matrix4 position = new Matrix4();
@@ -170,6 +121,9 @@ public abstract class Shape implements Renderable {
 			finalVertexShaderCode += "#define NORMALS\n";
 			finalFragmentShaderCode += "#define NORMALS\n";
 		}
+		
+		String vertexShaderCode = Gdx.files.classpath("shaders/vert.glsl").readString("UTF-8");
+		String fragmentShaderCode = Gdx.files.classpath("shaders/frag.glsl").readString("UTF-8");
 		
 		finalVertexShaderCode += vertexShaderCode;
 		finalFragmentShaderCode += fragmentShaderCode;

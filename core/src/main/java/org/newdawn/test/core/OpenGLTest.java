@@ -65,10 +65,10 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 			}
 		};
 		
-		cube = new Cube("nd-logo.png", false, new float[]{1,1,1,1});		
+		cube = new Cube("textures/nd-logo.png", false, new float[]{1,1,1,1});		
 		renderables.add(cube);
 		renderables.add(new Triangle(false));
-		square = new Square(true, "star.png");
+		square = new Square(true, "textures/star.png");
 		square.setPosition(0, 3, 0);
 		transparentRenderables.add(square);		
 	}
