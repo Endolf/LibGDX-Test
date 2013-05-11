@@ -2,12 +2,36 @@ package org.newdawn.test.core;
 
 public class Cube extends Shape {
 	public Cube(String textureLocation, boolean isTwoSided, float[] colour) {
-		super(new float[] { -1f, -1f, -1f, -1f, -1f, 1f, 1f, -1f, 1f, 1f, -1f, -1f, -1f, 1f, -1f,
-				-1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, -1f, -1f, -1f, -1f, -1f, 1f, -1f, 1f, 1f, -1f,
-				1f, -1f, -1f, -1f, -1f, 1f, -1f, 1f, 1f, 1f, 1f, 1f, 1f, -1f, 1f, -1f, -1f, -1f,
-				-1f, -1f, 1f, -1f, 1f, 1f, -1f, 1f, -1f, 1f, -1f, -1f, 1f, -1f, 1f, 1f, 1f, 1f,
-				1f, 1f, -1f,},
-			 new float[] { 1.0f, 0.0f, 
+		super();
+		
+		setVertices(new float[] { 
+				-1f, -1f, -1f,
+				-1f, -1f, 1f,
+				1f, -1f, 1f,
+				1f, -1f, -1f, 
+				-1f, 1f, -1f,
+				-1f, 1f, 1f, 
+				1f, 1f, 1f, 
+				1f, 1f, -1f, 
+				-1f, -1f, -1f, 
+				-1f, 1f, -1f,
+				1f, 1f, -1f,
+				1f, -1f, -1f, 
+				-1f, -1f, 1f, 
+				-1f, 1f, 1f, 
+				1f, 1f, 1f, 
+				1f, -1f, 1f, 
+				-1f, -1f, -1f,
+				-1f, -1f, 1f,
+				-1f, 1f, 1f, 
+				-1f, 1f, -1f,
+				1f, -1f, -1f, 
+				1f, -1f, 1f, 
+				1f, 1f, 1f,
+				1f, 1f, -1f,
+			});
+		setTextureCoords(new float[] { 
+				1.0f, 0.0f, 
 				1.0f, 1.0f, 
 				0.0f, 1.0f, 
 				0.0f, 0.0f, 
@@ -31,8 +55,8 @@ public class Cube extends Shape {
 				0.0f, 1.0f, 
 				0.0f, 0.0f, 
 				1.0f, 0.0f,				
-							},
-			 new short[] { 
+			});
+		setIndecies(new short[] { 
 				0, 2, 1, 
 				0, 3, 2, 
 				4, 5, 6, 
@@ -45,7 +69,37 @@ public class Cube extends Shape {
 				16, 18, 19,
 				20, 22, 21,
 				20, 23, 22, 
-						}, 
-			isTwoSided, colour, textureLocation, false);
+			});
+		setNormals(new float[] { 
+				0f, -1f, 0f,
+				0f, -1f, 0f,
+				0f, -1f, 0f,
+				0f, -1f, 0f,
+				0f, 1f, 0f,
+				0f, 1f, 0f, 
+				0f, 1f, 0f, 
+				0f, 1f, 0f, 
+				0f, 0f, -1f, 
+				0f, 0f, -1f, 
+				0f, 0f, -1f, 
+				0f, 0f, -1f, 
+				0f, 0f, 1f, 
+				0f, 0f, 1f, 
+				0f, 0f, 1f, 
+				0f, 0f, 1f, 
+				-1f, 0f, 0f,
+				-1f, 0f, 0f,
+				-1f, 0f, 0f,
+				-1f, 0f, 0f,
+				1f, 0f, 0f,
+				1f, 0f, 0f,
+				1f, 0f, 0f,
+				1f, 0f, 0f,
+			});
+		setTwoSided(isTwoSided);
+		setColour(colour);
+		setTextureLocation(textureLocation);
+		
+		initialise();
 	}
 }
