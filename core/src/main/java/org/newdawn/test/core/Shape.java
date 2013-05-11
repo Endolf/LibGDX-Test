@@ -160,6 +160,10 @@ public abstract class Shape implements Renderable {
 		shader.setUniformMatrix("uViewMatrix", viewMatrix, false);
 		shader.setUniformMatrix("uModelMatrix", position, false);
 		mesh.render(shader, GL20.GL_TRIANGLES);
+
+		shader.setUniformMatrix("uModelMatrix", position.cpy().translate(0, 0, -4), false);
+		mesh.render(shader, GL20.GL_TRIANGLES);
+		
 		shader.end();
 	}
 
