@@ -83,7 +83,7 @@ public abstract class Shape implements Renderable {
 		shader = new ShaderProgram(finalVertexShaderCode, finalFragmentShaderCode);		
 		
 		if(!shader.isCompiled()) {
-			Gdx.app.error("shader", "Failed to compile shape shader");
+			Gdx.app.error("shader", "Failed to compile shape shader\n" + finalVertexShaderCode + "\n" + finalFragmentShaderCode);
 			Gdx.app.log("opengl", shader.getLog());
 			Gdx.app.exit();
 		}
@@ -129,7 +129,7 @@ public abstract class Shape implements Renderable {
 		shader = new ShaderProgram(finalVertexShaderCode, finalFragmentShaderCode);		
 		
 		if(!shader.isCompiled()) {
-			Gdx.app.error("shader", "Failed to compile shape shader with texture");
+			Gdx.app.error("shader", "Failed to compile shape shader with texture\n" + finalVertexShaderCode + "\n" + finalFragmentShaderCode);
 			Gdx.app.log("opengl", shader.getLog());
 			Gdx.app.exit();
 		}
