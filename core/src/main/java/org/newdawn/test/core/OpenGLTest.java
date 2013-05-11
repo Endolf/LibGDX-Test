@@ -1,6 +1,8 @@
 package org.newdawn.test.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Camera;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
@@ -21,6 +24,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Cube cube;
 	private Shape square;
 	private List<Renderable> renderables = new ArrayList<Renderable>();
+	private List<Renderable> transparentRenderables = new ArrayList<Renderable>();
+	private Comparator<Renderable> depthComparator;
 	private FPSLogger fpsLogger;
 	
 	@Override
@@ -42,12 +47,24 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		camera.near = 1;
 		camera.far = 3000;
 
+		depthComparator = new Comparator<Renderable>() {
+
+			@Override
+			public int compare(Renderable o1, Renderable o2) {
+				float o2len2 = o2.getPosition(Vector3.tmp2).sub(camera.position).len2();
+				float o1len2 = o1.getPosition(Vector3.tmp).sub(camera.position).len2();
+				if(o2len2 < o1len2) return 1;
+				else if(o1len2 > o2len2) return -1;
+				else return 0;
+			}
+		};
+		
 		cube = new Cube();		
 		renderables.add(cube);
 		renderables.add(new Triangle(false));
 		square = new Square(true, "star.png");
 		square.setPosition(0, 3, 0);
-		
+		transparentRenderables.add(square);		
 	}
 
 	@Override
@@ -93,7 +110,10 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
         	renderable.render(camera.view, camera.projection);
         }
         
-        square.render(camera.view, camera.projection);
+        Collections.sort(transparentRenderables, depthComparator);
+        for(Renderable renderable : transparentRenderables) {
+        	renderable.render(camera.view, camera.projection);
+        }
         
         fpsLogger.log();
 	}
