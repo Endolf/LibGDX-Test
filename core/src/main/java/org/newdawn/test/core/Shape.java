@@ -151,7 +151,7 @@ public abstract class Shape implements Renderable {
 		mesh.setIndices(indecies);
 		
 		if(textureCoords!=null && textureLocation!=null) {
-			texture = new Texture(Gdx.files.internal(textureLocation), Format.RGBA8888, true);
+			texture = new Texture(Gdx.files.classpath(textureLocation), Format.RGBA8888, true);
 			texture.setFilter(TextureFilter.MipMapLinearNearest, TextureFilter.Nearest);
 		}
 		
