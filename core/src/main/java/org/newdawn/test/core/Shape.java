@@ -135,8 +135,6 @@ public abstract class Shape implements Renderable {
 			Gdx.app.log("opengl", shader.getLog());
 			Gdx.app.exit();
 		}
-
-		mesh.bind(shader);
 	}
 	
 	public void render(Matrix4 viewMatrix, Matrix4 projectionMatrix) {
@@ -147,8 +145,7 @@ public abstract class Shape implements Renderable {
 		}
 		
 		if(texture!=null) {
-			Gdx.gl20.glActiveTexture(GL20.GL_TEXTURE0);
-			texture.bind();
+			texture.bind(0);
 		}
 		shader.begin();
 		shader.setUniform4fv("uColor", colour, 0, 4);
