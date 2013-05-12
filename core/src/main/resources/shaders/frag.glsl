@@ -15,7 +15,4 @@ void main() {
 	#ifdef TEXTURED
 		gl_FragColor = texture2D(uTexture0, vTexCoord0) * gl_FragColor;
 	#endif
-	#ifdef NORMALS
-		gl_FragColor = gl_FragColor + vec4(vNormal, gl_FragColor.a);
-	#endif
 }
