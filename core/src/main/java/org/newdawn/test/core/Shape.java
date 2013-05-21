@@ -175,7 +175,7 @@ public abstract class Shape implements Renderable {
 	}
 	
 	public Vector3 getPosition(Vector3 vec) {
-		if(vec == null) vec = new Vector3();
+		if(vec == null) throw new IllegalArgumentException("vec must not be null");
 		vec.set(translation);
 		return vec;
 	}

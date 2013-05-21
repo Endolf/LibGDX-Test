@@ -8,7 +8,7 @@ public interface Renderable {
 	
 	/**
 	 * Gets the position of the current shape
-	 * @param vec The vector to store the position in to. If null, a new one is instanced
+	 * @param vec The vector to store the position in to.
 	 * @return The vector containing this shapes position.
 	 */
 	public Vector3 getPosition(Vector3 vec);
