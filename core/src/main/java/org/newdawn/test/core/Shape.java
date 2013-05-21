@@ -21,7 +21,7 @@ public abstract class Shape implements Renderable {
 	private Vector3 translation = new Vector3();
 	private float[] rotation = {0,0,1,0};
 
-	private float[] colour;
+	private float[] emissiveColour;
 	private float[] vertices;
 	private short[] indecies;
 	private float[] textureCoords;
@@ -32,21 +32,21 @@ public abstract class Shape implements Renderable {
 	private boolean isBillboard;
 	private String textureLocation;
 
-	public Shape(float[] vertices, short[] indecies, boolean twoSided, float[] colour, boolean isBillboard) {
+	public Shape(float[] vertices, short[] indecies, boolean twoSided, float[] emissiveColour, boolean isBillboard) {
 		this.vertices = vertices;
 		this.indecies = indecies;
 		this.isTwoSided = twoSided;
-		this.colour = colour;
+		this.emissiveColour = emissiveColour;
 		this.isBillboard = isBillboard;
 
 		initialise();
 	}
 	
-	public Shape(float[] vertices, float[] textureCoords, short[] indecies, boolean twoSided, float[] colour, String textureLocation, boolean isBillboard) {
+	public Shape(float[] vertices, float[] textureCoords, short[] indecies, boolean twoSided, float[] emissiveColour, String textureLocation, boolean isBillboard) {
 		this.vertices = vertices;
 		this.indecies = indecies;
 		this.isTwoSided = twoSided;
-		this.colour = colour;
+		this.emissiveColour = emissiveColour;
 		this.isBillboard = isBillboard;
 		this.textureLocation = textureLocation;
 		this.textureCoords = textureCoords;
@@ -148,7 +148,7 @@ public abstract class Shape implements Renderable {
 			texture.bind(0);
 		}
 		shader.begin();
-		shader.setUniform4fv("uColor", colour, 0, 4);
+		shader.setUniform4fv("uColor", emissiveColour, 0, 4);
 		if(texture!=null) {
 			shader.setUniformf("uTexture0", 0);
 		}
@@ -195,12 +195,12 @@ public abstract class Shape implements Renderable {
 		if(mesh!=null) mesh.dispose();
 	}
 
-	public float[] getColour() {
-		return colour;
+	public float[] getEmissiveColour() {
+		return emissiveColour;
 	}
 
-	public void setColour(float[] colour) {
-		this.colour = colour;
+	public void setEmissiveColour(float[] colour) {
+		this.emissiveColour = colour;
 	}
 
 	public float[] getVertices() {

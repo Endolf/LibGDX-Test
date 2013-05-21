@@ -10,7 +10,7 @@ public class Triangle extends Shape {
 		
 		setIndecies(new short[] { 0, 1, 2 });
 		setTwoSided(true);
-		setColour(new float[]{0,1,0,1});
+		setEmissiveColour(new float[]{0,1,0,1});
 		setBillboard(isBillboard);
 		setNormals(new float[] {0,0,1,
 				0,0,1,

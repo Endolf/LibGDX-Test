@@ -97,7 +97,7 @@ public class Cube extends Shape {
 				1f, 0f, 0f,
 			});
 		setTwoSided(isTwoSided);
-		setColour(colour);
+		setEmissiveColour(colour);
 		setTextureLocation(textureLocation);
 		
 		initialise();

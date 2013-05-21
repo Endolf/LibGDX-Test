@@ -19,7 +19,7 @@ public class Square extends Shape {
 				2, 3, 0, 
 						});
 		setTwoSided(true);
-		setColour(new float[] {1,1,1,1});
+		setEmissiveColour(new float[] {1,1,1,1});
 		setTextureLocation(texture);
 		setBillboard(isBillboard);
 		setNormals(new float[] {0,0,1,
