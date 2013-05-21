@@ -75,7 +75,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 
 	@Override
 	public void resize (int width, int height) {
-		Gdx.app.debug("init", "In resize");
+		Gdx.app.debug("init", "In resize, new size: " + width + "x" + height);
 
 		camera.viewportWidth = width;
 		camera.viewportHeight = height;
