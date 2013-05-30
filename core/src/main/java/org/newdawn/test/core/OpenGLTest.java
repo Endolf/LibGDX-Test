@@ -129,9 +129,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
         	renderable.render(camera.view, camera.projection);
         }
         
-        spriteBatch.begin();
-        font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 5, font.getCapHeight() + 5);
-        spriteBatch.end();
+//        spriteBatch.begin();
+//        font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 5, font.getCapHeight() + 5);
+//        spriteBatch.end();
         
         fpsLogger.log();
 	}
