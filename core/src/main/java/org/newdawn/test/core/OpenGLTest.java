@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -27,6 +29,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private List<Renderable> transparentRenderables = new ArrayList<Renderable>();
 	private Comparator<Renderable> depthComparator;
 	private FPSLogger fpsLogger;
+	private BitmapFont font;
+	private SpriteBatch spriteBatch;
 	
 	private Vector3 tempVector01 = new Vector3();
 	
@@ -71,6 +75,10 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		square = new Square(true, "textures/star.png");
 		square.setPosition(0, 3, 0);
 		transparentRenderables.add(square);		
+		
+		spriteBatch = new SpriteBatch();
+		font = new BitmapFont();
+		font.setColor(0, 1, 0, 1);
 	}
 
 	@Override
@@ -121,6 +129,10 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
         	renderable.render(camera.view, camera.projection);
         }
         
+        spriteBatch.begin();
+        font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 5, font.getCapHeight() + 5);
+        spriteBatch.end();
+        
         fpsLogger.log();
 	}
 
@@ -137,6 +149,11 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	@Override
 	public void dispose () {
 		Gdx.app.debug("init", "In dispose");
+		
+		if(font!=null) font.dispose();
+		
+		if(spriteBatch!=null) spriteBatch.dispose();
+		
         for(Renderable renderable : renderables) {
         	renderable.dispose();
         }
