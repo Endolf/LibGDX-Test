@@ -12,12 +12,18 @@ public class LibGDXTestActivity extends AndroidApplication {
 	@Override
    public void onCreate(Bundle savedInstanceState) {
        super.onCreate(savedInstanceState);
+
        AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
        config.useGL20 = true;
        config.useWakelock = true;
        config.useAccelerometer = false;
        config.useCompass = false;
-       config.numSamples = 2;
+       //Bug in the nexus 4 causes hard locks when changing screen orientation with AA.
+       if(android.os.Build.MODEL.contains("Nexus 4")) {
+    	   config.numSamples = 0;
+       } else {
+    	   config.numSamples = 2;
+       }
        initialize(new OpenGLTest(), config);
    }
 }
