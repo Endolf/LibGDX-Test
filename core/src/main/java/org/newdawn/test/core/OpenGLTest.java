@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -28,7 +27,6 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private List<Renderable> renderables = new ArrayList<Renderable>();
 	private List<Renderable> transparentRenderables = new ArrayList<Renderable>();
 	private Comparator<Renderable> depthComparator;
-	private FPSLogger fpsLogger;
 	private BitmapFont font;
 	private SpriteBatch spriteBatch;
 	
@@ -42,12 +40,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		Gdx.gl20.glClearColor(0, 0, 0, 1);
 		Gdx.gl20.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.gl20.glDepthFunc(GL20.GL_LESS);
-		Gdx.gl20.glEnable(GL20.GL_BLEND);
-		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
 		Gdx.input.setInputProcessor(this);
-
-		fpsLogger = new FPSLogger();
 
 		camera = new PerspectiveCamera(67, 1, 1);
 		camera.near = 1;
@@ -88,6 +82,11 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		camera.viewportWidth = width;
 		camera.viewportHeight = height;
 		
+		if(spriteBatch!=null) {
+			spriteBatch.dispose();
+		}
+		spriteBatch = new SpriteBatch();
+		
 		rotateCamera(0,0);
 	}
 
@@ -120,6 +119,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
         cube.setPosition(offset * 3f,0,-3);
         cube.setRotation(animationRatio * 360, 1, 0, 0);
 
+		Gdx.gl20.glEnable(GL20.GL_BLEND);
+		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         for(Renderable renderable : renderables) {
         	renderable.render(camera.view, camera.projection);
         }
@@ -129,11 +130,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
         	renderable.render(camera.view, camera.projection);
         }
         
-//        spriteBatch.begin();
-//        font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 5, font.getCapHeight() + 5);
-//        spriteBatch.end();
-        
-        fpsLogger.log();
+        spriteBatch.begin();
+        font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 5, font.getCapHeight() + 5);
+        spriteBatch.end();
 	}
 
 	@Override
