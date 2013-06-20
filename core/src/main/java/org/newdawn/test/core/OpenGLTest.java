@@ -109,8 +109,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		camera.position.rotate(cameraXRot, 1, 0, 0);
 		camera.position.rotate(cameraYRot, 0, 1, 0);
 		
-		camera.lookAt(0, 0, 0);
-
+		camera.direction.set(0,0,0);
+		camera.direction.sub(camera.position);
+		
 		camera.update();
 	}
 
