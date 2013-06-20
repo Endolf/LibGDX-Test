@@ -126,8 +126,9 @@ public abstract class Shape implements Renderable {
 			finalFragmentShaderCode += "#define NORMALS\n";
 		}
 		
-		finalVertexShaderCode += "#define AMBIENT_LIGHT\n";
 		finalFragmentShaderCode += "#define AMBIENT_LIGHT\n";
+		finalFragmentShaderCode += "#define MAX_DIR_LIGHTS 1\n";
+		finalFragmentShaderCode += "#define MAX_POINT_LIGHTS 1\n";
 		
 		String vertexShaderCode = Gdx.files.classpath("shaders/vert.glsl").readString("UTF-8");
 		String fragmentShaderCode = Gdx.files.classpath("shaders/frag.glsl").readString("UTF-8");
@@ -165,6 +166,12 @@ public abstract class Shape implements Renderable {
 		shader.setUniformMatrix("uProjectionMatrix", projectionMatrix, false);
 		shader.setUniformMatrix("uViewMatrix", viewMatrix, false);
 		shader.setUniformMatrix("uModelMatrix", position, false);
+		
+		shader.setUniformi("uNumDirectionalLights", lights.directionalLights.size);
+		shader.setUniformi("uNumPointLights", lights.pointLights.size);
+		
+		shader.setUniformf("uDirLights[0].colour", lights.directionalLights.get(0).color);
+		
 		mesh.render(shader, GL20.GL_TRIANGLES);
 		shader.end();
 	}

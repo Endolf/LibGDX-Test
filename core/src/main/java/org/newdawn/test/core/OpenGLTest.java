@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.lights.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.lights.Lights;
+import com.badlogic.gdx.graphics.g3d.lights.PointLight;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -76,8 +78,19 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		font = new BitmapFont();
 		font.setColor(0, 1, 0, 1);
 		
+		PointLight pointLight = new PointLight();
+		square.getPosition(pointLight.position);
+		pointLight.color.set(1,1,1,1);
+		pointLight.intensity = 1;
+		
+		DirectionalLight directionalLight = new DirectionalLight();
+		directionalLight.direction.set(0,1,0);
+		directionalLight.color.set(0.5f,0.5f,0.5f,1);
+		
 		lights = new Lights();
-		lights.ambientLight.set(0.5f, 0.5f, 0.5f, 1);
+		lights.ambientLight.set(0.125f, 0.125f, 0.125f, 1);
+		lights.add(pointLight);
+		lights.add(directionalLight);
 	}
 
 	@Override
