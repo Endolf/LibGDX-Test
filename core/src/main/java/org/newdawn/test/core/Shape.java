@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.lights.Lights;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -21,7 +22,8 @@ public abstract class Shape implements Renderable {
 	private Vector3 translation = new Vector3();
 	private float[] rotation = {0,0,1,0};
 
-	private float[] emissiveColour;
+	private float[] emissiveColour = new float[] {0,0,0,0};
+	private float[] diffuseColour = new float[] {0,0,0,0};
 	private float[] vertices;
 	private short[] indecies;
 	private float[] textureCoords;
@@ -32,21 +34,23 @@ public abstract class Shape implements Renderable {
 	private boolean isBillboard;
 	private String textureLocation;
 
-	public Shape(float[] vertices, short[] indecies, boolean twoSided, float[] emissiveColour, boolean isBillboard) {
+	public Shape(float[] vertices, short[] indecies, boolean twoSided, float[] emissiveColour, float[] diffuseColour, boolean isBillboard) {
 		this.vertices = vertices;
 		this.indecies = indecies;
 		this.isTwoSided = twoSided;
 		this.emissiveColour = emissiveColour;
+		this.diffuseColour = diffuseColour;
 		this.isBillboard = isBillboard;
 
 		initialise();
 	}
 	
-	public Shape(float[] vertices, float[] textureCoords, short[] indecies, boolean twoSided, float[] emissiveColour, String textureLocation, boolean isBillboard) {
+	public Shape(float[] vertices, float[] textureCoords, short[] indecies, boolean twoSided, float[] emissiveColour, float[] diffuseColour, String textureLocation, boolean isBillboard) {
 		this.vertices = vertices;
 		this.indecies = indecies;
 		this.isTwoSided = twoSided;
 		this.emissiveColour = emissiveColour;
+		this.diffuseColour = diffuseColour;
 		this.isBillboard = isBillboard;
 		this.textureLocation = textureLocation;
 		this.textureCoords = textureCoords;
@@ -122,6 +126,9 @@ public abstract class Shape implements Renderable {
 			finalFragmentShaderCode += "#define NORMALS\n";
 		}
 		
+		finalVertexShaderCode += "#define AMBIENT_LIGHT\n";
+		finalFragmentShaderCode += "#define AMBIENT_LIGHT\n";
+		
 		String vertexShaderCode = Gdx.files.classpath("shaders/vert.glsl").readString("UTF-8");
 		String fragmentShaderCode = Gdx.files.classpath("shaders/frag.glsl").readString("UTF-8");
 		
@@ -137,7 +144,8 @@ public abstract class Shape implements Renderable {
 		}
 	}
 	
-	public void render(Matrix4 viewMatrix, Matrix4 projectionMatrix) {
+	@Override
+	public void render(Matrix4 viewMatrix, Matrix4 projectionMatrix, Lights lights) {
 		if(isTwoSided) {
 			Gdx.gl20.glDisable(GL20.GL_CULL_FACE);
 		} else {
@@ -148,7 +156,9 @@ public abstract class Shape implements Renderable {
 			texture.bind(0);
 		}
 		shader.begin();
-		shader.setUniform4fv("uColor", emissiveColour, 0, 4);
+		shader.setUniformf("uAmbientLightColour", lights.ambientLight);
+		shader.setUniform4fv("uEmissiveColour", emissiveColour, 0, 4);
+		shader.setUniform4fv("uDiffuseColour", diffuseColour, 0, 4);
 		if(texture!=null) {
 			shader.setUniformf("uTexture0", 0);
 		}
@@ -201,6 +211,14 @@ public abstract class Shape implements Renderable {
 
 	public void setEmissiveColour(float[] colour) {
 		this.emissiveColour = colour;
+	}
+
+	public float[] getDiffuseColour() {
+		return diffuseColour;
+	}
+
+	public void setDiffuseColour(float[] colour) {
+		this.diffuseColour = colour;
 	}
 
 	public float[] getVertices() {

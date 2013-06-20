@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.lights.Lights;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -29,6 +30,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Comparator<Renderable> depthComparator;
 	private BitmapFont font;
 	private SpriteBatch spriteBatch;
+	private Lights lights;
 	
 	private Vector3 tempVector01 = new Vector3();
 	
@@ -73,6 +75,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
 		font.setColor(0, 1, 0, 1);
+		
+		lights = new Lights();
+		lights.ambientLight.set(0.5f, 0.5f, 0.5f, 1);
 	}
 
 	@Override
@@ -122,12 +127,12 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         for(Renderable renderable : renderables) {
-        	renderable.render(camera.view, camera.projection);
+        	renderable.render(camera.view, camera.projection, lights);
         }
         
         Collections.sort(transparentRenderables, depthComparator);
         for(Renderable renderable : transparentRenderables) {
-        	renderable.render(camera.view, camera.projection);
+        	renderable.render(camera.view, camera.projection, lights);
         }
         
         spriteBatch.begin();
