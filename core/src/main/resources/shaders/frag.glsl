@@ -3,18 +3,18 @@
 #endif
 
 struct DirLight {
-	vec3 direction;
-	vec4 colour;
+	vec3 direction[MAX_DIR_LIGHTS];
+	vec4 colour[MAX_DIR_LIGHTS];
 };
 
 struct PointLight {
-	vec3 position;
-	vec4 colour;
-	float intensity;
+	vec3 position[MAX_POINT_LIGHTS];
+	vec4 colour[MAX_POINT_LIGHTS];
+	float intensity[MAX_POINT_LIGHTS];
 };
 
-uniform DirLight uDirLights[MAX_DIR_LIGHTS];
-uniform PointLight uPointLights[MAX_POINT_LIGHTS];
+uniform DirLight uDirLights;
+uniform PointLight uPointLights;
 
 uniform vec4 uEmissiveColour;
 uniform vec4 uDiffuseColour;
@@ -40,7 +40,7 @@ void main() {
 	#endif
 	
 	for(int i=0;i<uNumPointLights;i++) {
-		gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights[i].colour);
+		gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i]);
 	}
 
 	for(int i=0;i<uNumDirectionalLights;i++) {

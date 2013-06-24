@@ -170,7 +170,7 @@ public abstract class Shape implements Renderable {
 		shader.setUniformi("uNumDirectionalLights", lights.directionalLights.size);
 		shader.setUniformi("uNumPointLights", lights.pointLights.size);
 		
-		shader.setUniformf("uDirLights[0].colour", lights.directionalLights.get(0).color);
+		shader.setUniformf("uDirLights.colour[0]", lights.directionalLights.get(0).color);
 		
 		mesh.render(shader, GL20.GL_TRIANGLES);
 		shader.end();
