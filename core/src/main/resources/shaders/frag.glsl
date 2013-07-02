@@ -44,7 +44,7 @@ void main() {
 	gl_FragColor = uEmissiveColour;
 	
 	#ifdef AMBIENT_LIGHT
-		gl_FragColor = gl_FragColor + (uDiffuseColour * uAmbientLightColour);
+		gl_FragColor = (uDiffuseColour * uAmbientLightColour) + gl_FragColor;
 	#endif
 	
 	for(int i=0;i<uNumDirectionalLights;i++) {
