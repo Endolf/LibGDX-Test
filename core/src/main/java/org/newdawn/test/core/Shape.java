@@ -181,7 +181,7 @@ public abstract class Shape implements Renderable {
 		for(int i=0;i<lights.pointLights.size;i++) {
 			PointLight light = lights.pointLights.get(i);
 			shader.setUniformf("uPointLights.colour[" + i + "]", light.color);
-			shader.setUniformf("uPointLights.intensity[" + i + "]", light.intensity);
+			shader.setUniformf("uPointLights.attenuation[" + i + "]", 1 - light.intensity);
 			shader.setUniformf("uPointLights.position[" + i + "]", light.position);
 		}
 		

@@ -10,12 +10,14 @@ struct DirLight {
 struct PointLight {
 	vec3 position[MAX_POINT_LIGHTS];
 	vec4 colour[MAX_POINT_LIGHTS];
-	float intensity[MAX_POINT_LIGHTS];
+	float attenuation[MAX_POINT_LIGHTS];
 };
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
+
+varying vec4 vWorldPosition;
 
 uniform DirLight uDirLights;
 uniform PointLight uPointLights;
@@ -56,7 +58,18 @@ void main() {
 	}
 
 	for(int i=0;i<uNumPointLights;i++) {
-		gl_FragColor = gl_FragColor + (uDiffuseColour * uPointLights.colour[i]);
+		#ifdef NORMALS			
+			vec3 lightVector = normalize(uPointLights.position[i] - vWorldPosition.xyz);
+			float cosine = dot(vWorldNormal, lightVector);
+			float lambert = max(cosine, 0);
+			float distance = length(uPointLights.position[i] - vWorldPosition.xyz);
+//			float attenuation = (1.0 / (uPointLights.attenuation[i] + (uPointLights.attenuation[i] * distance) + (uPointLights.attenuation[i] * distance * distance)));
+			float attenuation = (1.0 / (uPointLights.attenuation[i] * distance));
+			float lightFactor = clamp(lambert * attenuation,0,1);
+			gl_FragColor = gl_FragColor + (uDiffuseColour * uPointLights.colour[i] * lightFactor);
+		#else
+			gl_FragColor = gl_FragColor + (uDiffuseColour * uPointLights.colour[i]);
+		#endif
 	}
 	
 	#ifdef TEXTURED

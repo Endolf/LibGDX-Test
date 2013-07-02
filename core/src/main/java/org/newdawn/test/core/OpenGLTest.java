@@ -33,6 +33,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Comparator<Renderable> depthComparator;
 	private BitmapFont font;
 	private SpriteBatch spriteBatch;
+	private PointLight pointLight;
 	private Lights lights;
 	
 	private Vector3 tempVector01 = new Vector3();
@@ -69,10 +70,10 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		};
 		
 		cube = new Cube("textures/nd-logo.png", false, new float[]{1,1,1,1});
-		cube.setPosition(1.5f, 0, -3);
+		cube.setPosition(0f, 0, -3);
 		renderables.add(cube);
 		cube2 = new Cube("textures/nd-logo.png", false, new float[]{1,1,1,1});
-		cube2.setPosition(-1.5f, 0, -3);
+		cube2.setPosition(0f, -3, 0);
 		renderables.add(cube2);
 		renderables.add(new Triangle(false));
 		square = new Square(true, "textures/star.png");
@@ -83,18 +84,18 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		font = new BitmapFont();
 		font.setColor(0, 1, 0, 1);
 		
-		PointLight pointLight = new PointLight();
+		pointLight = new PointLight();
 		square.getPosition(pointLight.position);
 		pointLight.color.set(1,1,1,1);
-		pointLight.intensity = 1;
+		pointLight.intensity = 0.75f;
 		
 		DirectionalLight directionalLight = new DirectionalLight();
 		directionalLight.direction.set(0,0,1);
-		directionalLight.color.set(0.5f,0.5f,0.5f,1);
+		directionalLight.color.set(0.0f,0.0f,0.5f,1);
 		
 		lights = new Lights();
-//		lights.ambientLight.set(0.5f, 0.0f, 0.0f, 1);
-//		lights.add(pointLight);
+		lights.ambientLight.set(0.0f, 0.125f, 0.125f, 1);
+		lights.add(pointLight);
 		lights.add(directionalLight);
 	}
 
@@ -140,9 +141,13 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		float animationRatio = (TimeUtils.millis() % 2000)/2000.0f;
 		
 		float offset = MathUtils.sin(animationRatio * (MathUtils.PI2));
-//        cube.setPosition(offset * 3f,0,-3);
+		float offset2 = MathUtils.cos(animationRatio * (MathUtils.PI2));
+        cube.setPosition((offset * 3f),0,-3);
         cube.setRotation(animationRatio * 360, 1, 0, 0);
         cube2.setRotation(animationRatio * 360, 0, 1, 0);
+        
+        square.setPosition(0f, (offset * 7f), (offset2 * 7f));
+		square.getPosition(pointLight.position);
 
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

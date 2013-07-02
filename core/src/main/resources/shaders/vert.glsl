@@ -2,6 +2,7 @@ uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 attribute vec4 aPosition;
+varying vec4 vWorldPosition;
 #ifdef TEXTURED
 	attribute vec2 aTexCoord0;
 	varying vec2 vTexCoord0;
@@ -19,6 +20,9 @@ void main() {
 	#else
 		gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aPosition;
 	#endif
+	
+	vWorldPosition = uModelMatrix * aPosition;
+	
 	#ifdef TEXTURED
 		vTexCoord0 = aTexCoord0;
 	#endif
