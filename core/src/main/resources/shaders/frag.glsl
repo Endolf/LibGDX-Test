@@ -46,7 +46,13 @@ void main() {
 	#endif
 	
 	for(int i=0;i<uNumDirectionalLights;i++) {
-		gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i]);
+		#ifdef NORMALS
+			float cosine = dot(vWorldNormal, uDirLights.direction[i]);
+			float lambert = max(cosine, 0);
+			gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i] * lambert);
+		#else
+			gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i]);
+		#endif
 	}
 
 	for(int i=0;i<uNumPointLights;i++) {
@@ -55,10 +61,6 @@ void main() {
 	
 	#ifdef TEXTURED
 		gl_FragColor = texture2D(uTexture0, vTexCoord0) * gl_FragColor;
-	#endif
-	
-	#ifdef NORMALS
-		gl_FragColor = vec4((vEyeNormal + vec3(1,1,1)) * 0.5,1);
 	#endif
 	
 	gl_FragColor = clamp(gl_FragColor, 0, 1);
