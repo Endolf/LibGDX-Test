@@ -41,19 +41,19 @@ uniform int uNumDirectionalLights;
 #endif
 
 void main() {
-	vec4 fragColour = vec4(0,0,0,1);
+	gl_FragColor = uEmissiveColour;
 	
 	#ifdef AMBIENT_LIGHT
-		fragColour = (uDiffuseColour * uAmbientLightColour);
+		gl_FragColor = gl_FragColor + (uDiffuseColour * uAmbientLightColour);
 	#endif
 	
 	for(int i=0;i<uNumDirectionalLights;i++) {
 		#ifdef NORMALS
 			float cosine = dot(vWorldNormal, uDirLights.direction[i]);
 			float lambert = max(cosine, 0.0);
-			//fragColour = fragColour + (uDiffuseColour * uDirLights.colour[i] * lambert);
+			gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i] * lambert);
 		#else
-			//fragColour = fragColour + (uDiffuseColour * uDirLights.colour[i]);
+			gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i]);
 		#endif
 	}
 
@@ -66,17 +66,15 @@ void main() {
 //			float attenuation = (1.0 / (uPointLights.attenuation[i] + (uPointLights.attenuation[i] * distance) + (uPointLights.attenuation[i] * distance * distance)));
 			float attenuation = (1.0 / (uPointLights.attenuation[i] * distance));
 			float lightFactor = clamp(lambert * attenuation,0.0,1.0);
-			vec4 lightAdded = lightFactor * uPointLights.colour[i] * uDiffuseColour;
-			fragColour = fragColour + vec4(0,0,0,1);
-			
+			gl_FragColor = gl_FragColor + (uDiffuseColour * uPointLights.colour[i] * lightFactor);
 		#else
-			//fragColour = fragColour + (uDiffuseColour * uPointLights.colour[i]);
+			gl_FragColor = gl_FragColor + (uDiffuseColour * uPointLights.colour[i]);
 		#endif
 	}
 	
 	#ifdef TEXTURED
-		fragColour = texture2D(uTexture0, vTexCoord0) * fragColour;
+		gl_FragColor = texture2D(uTexture0, vTexCoord0) * gl_FragColor;
 	#endif
 	
-	gl_FragColor = clamp(fragColour, 0.0, 1.0);
+	gl_FragColor = clamp(gl_FragColor, 0.0, 1.0);
 }

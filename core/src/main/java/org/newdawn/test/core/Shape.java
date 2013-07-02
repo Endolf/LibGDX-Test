@@ -159,14 +159,8 @@ public abstract class Shape implements Renderable {
 			texture.bind(0);
 		}
 		shader.begin();
-		int ambientLightingLocation = shader.getAttributeLocation("uAmbientLightColour");
-		if(ambientLightingLocation>0) {
-			shader.setUniformf(ambientLightingLocation, lights.ambientLight);
-		}
-		int emissiveColourLocation = shader.getAttributeLocation("uAmbientLightColour");
-		if(emissiveColourLocation>0) {
-			shader.setUniform4fv(emissiveColourLocation, emissiveColour, 0, 4);
-		}
+		shader.setUniformf("uAmbientLightColour", lights.ambientLight);
+		shader.setUniform4fv("uEmissiveColour", emissiveColour, 0, 4);
 		shader.setUniform4fv("uDiffuseColour", diffuseColour, 0, 4);
 		if(texture!=null) {
 			shader.setUniformf("uTexture0", 0);
