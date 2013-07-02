@@ -26,6 +26,7 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Camera camera;
 	private float cameraXRot = -45,cameraYRot = 45;
 	private Cube cube;
+	private Cube cube2;
 	private Shape square;
 	private List<Renderable> renderables = new ArrayList<Renderable>();
 	private List<Renderable> transparentRenderables = new ArrayList<Renderable>();
@@ -67,8 +68,12 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 			}
 		};
 		
-		cube = new Cube("textures/nd-logo.png", false, new float[]{1,1,1,1});		
+		cube = new Cube("textures/nd-logo.png", false, new float[]{1,1,1,1});
+		cube.setPosition(1.5f, 0, -3);
 		renderables.add(cube);
+		cube2 = new Cube("textures/nd-logo.png", false, new float[]{1,1,1,1});
+		cube2.setPosition(-1.5f, 0, -3);
+		renderables.add(cube2);
 		renderables.add(new Triangle(false));
 		square = new Square(true, "textures/star.png");
 		square.setPosition(0, 3, 0);
@@ -88,8 +93,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		directionalLight.color.set(0.5f,0.5f,0.5f,1);
 		
 		lights = new Lights();
-		lights.ambientLight.set(0.5f, 0.0f, 0.0f, 1);
-		lights.add(pointLight);
+//		lights.ambientLight.set(0.5f, 0.0f, 0.0f, 1);
+//		lights.add(pointLight);
 		lights.add(directionalLight);
 	}
 
@@ -135,8 +140,9 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		float animationRatio = (TimeUtils.millis() % 2000)/2000.0f;
 		
 		float offset = MathUtils.sin(animationRatio * (MathUtils.PI2));
-        cube.setPosition(offset * 3f,0,-3);
+//        cube.setPosition(offset * 3f,0,-3);
         cube.setRotation(animationRatio * 360, 1, 0, 0);
+        cube2.setRotation(animationRatio * 360, 0, 1, 0);
 
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

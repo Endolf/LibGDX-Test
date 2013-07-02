@@ -8,7 +8,9 @@ attribute vec4 aPosition;
 #endif
 #ifdef NORMALS
 	attribute vec3 aNormal;
-	varying vec3 vNormal;
+	varying vec3 vModelNormal;
+	varying vec3 vWorldNormal;
+	varying vec3 vEyeNormal;
 #endif
 
 void main() {
@@ -21,7 +23,14 @@ void main() {
 		vTexCoord0 = aTexCoord0;
 	#endif
 	#ifdef NORMALS
-		vNormal = aNormal;
+		vModelNormal = aNormal;
+		#ifdef BILLBOARD
+			vWorldNormal = (uModelMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(aNormal.x, aNormal.y, 0.0, 0.0)).xyz;
+			vEyeNormal = (uProjectionMatrix * (uViewMatrix * uModelMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(aNormal.x, aNormal.y, 0.0, 0.0))).xyz;
+		#else
+			vWorldNormal = (uModelMatrix * vec4(aNormal,0)).xyz;
+			vEyeNormal = (uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(aNormal,0)).xyz;
+		#endif
 	#endif
 }
 

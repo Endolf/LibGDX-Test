@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.lights.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.lights.Lights;
+import com.badlogic.gdx.graphics.g3d.lights.PointLight;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -170,7 +172,18 @@ public abstract class Shape implements Renderable {
 		shader.setUniformi("uNumDirectionalLights", lights.directionalLights.size);
 		shader.setUniformi("uNumPointLights", lights.pointLights.size);
 		
-		shader.setUniformf("uDirLights.colour[0]", lights.directionalLights.get(0).color);
+		for(int i=0;i<lights.directionalLights.size;i++) {
+			DirectionalLight light = lights.directionalLights.get(i);
+			shader.setUniformf("uDirLights.colour[" + i + "]", light.color);
+			shader.setUniformf("uDirLights.direction[" + i + "]", light.direction);
+		}
+		
+		for(int i=0;i<lights.pointLights.size;i++) {
+			PointLight light = lights.pointLights.get(i);
+			shader.setUniformf("uPointLights.colour[" + i + "]", light.color);
+			shader.setUniformf("uPointLights.intensity[" + i + "]", light.intensity);
+			shader.setUniformf("uPointLights.position[" + i + "]", light.position);
+		}
 		
 		mesh.render(shader, GL20.GL_TRIANGLES);
 		shader.end();

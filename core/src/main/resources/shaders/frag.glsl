@@ -13,6 +13,10 @@ struct PointLight {
 	float intensity[MAX_POINT_LIGHTS];
 };
 
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uProjectionMatrix;
+
 uniform DirLight uDirLights;
 uniform PointLight uPointLights;
 
@@ -29,7 +33,9 @@ uniform int uNumDirectionalLights;
 	varying vec2 vTexCoord0;
 #endif
 #ifdef NORMALS
-	varying vec3 vNormal;
+	varying vec3 vModelNormal;
+	varying vec3 vWorldNormal;
+	varying vec3 vEyeNormal;
 #endif
 
 void main() {
@@ -39,14 +45,21 @@ void main() {
 		gl_FragColor = gl_FragColor + (uDiffuseColour * uAmbientLightColour);
 	#endif
 	
-	for(int i=0;i<uNumPointLights;i++) {
+	for(int i=0;i<uNumDirectionalLights;i++) {
 		gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i]);
 	}
 
-	for(int i=0;i<uNumDirectionalLights;i++) {
+	for(int i=0;i<uNumPointLights;i++) {
+		gl_FragColor = gl_FragColor + (uDiffuseColour * uPointLights.colour[i]);
 	}
 	
 	#ifdef TEXTURED
 		gl_FragColor = texture2D(uTexture0, vTexCoord0) * gl_FragColor;
 	#endif
+	
+	#ifdef NORMALS
+		gl_FragColor = vec4((vEyeNormal + vec3(1,1,1)) * 0.5,1);
+	#endif
+	
+	gl_FragColor = clamp(gl_FragColor, 0, 1);
 }
