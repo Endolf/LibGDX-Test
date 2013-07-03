@@ -9,8 +9,8 @@ struct DirLight {
 
 struct PointLight {
 	vec3 position[MAX_POINT_LIGHTS];
+	float intensity[MAX_POINT_LIGHTS];
 	vec4 colour[MAX_POINT_LIGHTS];
-	float attenuation[MAX_POINT_LIGHTS];
 };
 
 uniform mat4 uModelMatrix;
@@ -51,24 +51,24 @@ void main() {
 		#ifdef NORMALS
 			float cosine = dot(vWorldNormal, uDirLights.direction[i]);
 			float lambert = max(cosine, 0.0);
-			gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i] * lambert);
+			gl_FragColor = (uDiffuseColour * uDirLights.colour[i] * lambert) + gl_FragColor;
 		#else
-			gl_FragColor = gl_FragColor + (uDiffuseColour * uDirLights.colour[i]);
+			gl_FragColor = (uDiffuseColour * uDirLights.colour[i]) + gl_FragColor;
 		#endif
 	}
 
 	for(int i=0;i<uNumPointLights;i++) {
 		#ifdef NORMALS			
-			vec3 lightVector = normalize(uPointLights.position[i] - vWorldPosition.xyz);
+			vec3 lightVector = normalize(vec3(uPointLights.position[i] - vWorldPosition.xyz));
 			float cosine = dot(vWorldNormal, lightVector);
 			float lambert = max(cosine, 0.0);
 			float distance = length(uPointLights.position[i] - vWorldPosition.xyz);
-//			float attenuation = (1.0 / (uPointLights.attenuation[i] + (uPointLights.attenuation[i] * distance) + (uPointLights.attenuation[i] * distance * distance)));
-			float attenuation = (1.0 / (uPointLights.attenuation[i] * distance));
+//			//float attenuation = (1.0 / (uPointLights.attenuation[i] + (uPointLights.attenuation[i] * distance) + (uPointLights.attenuation[i] * distance * distance)));
+			float attenuation = (1.0 / (((1.0 - uPointLights.intensity[i]) * distance) + ((1.0 - uPointLights.intensity[i]) * distance * distance)));
 			float lightFactor = clamp(lambert * attenuation,0.0,1.0);
-			gl_FragColor = gl_FragColor + (uDiffuseColour * uPointLights.colour[i] * lightFactor);
+			gl_FragColor = (uDiffuseColour * uPointLights.colour[i] * lightFactor) + gl_FragColor;
 		#else
-			gl_FragColor = gl_FragColor + (uDiffuseColour * uPointLights.colour[i]);
+			gl_FragColor = (uDiffuseColour * uPointLights.colour[i]) + gl_FragColor;
 		#endif
 	}
 	

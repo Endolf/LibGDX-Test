@@ -28,12 +28,16 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	private Cube cube;
 	private Cube cube2;
 	private Shape square;
+	private Shape square2;
+	private Shape square3;
 	private List<Renderable> renderables = new ArrayList<Renderable>();
 	private List<Renderable> transparentRenderables = new ArrayList<Renderable>();
 	private Comparator<Renderable> depthComparator;
 	private BitmapFont font;
 	private SpriteBatch spriteBatch;
 	private PointLight pointLight;
+	private PointLight pointLight2;
+	private PointLight pointLight3;
 	private Lights lights;
 	
 	private Vector3 tempVector01 = new Vector3();
@@ -76,9 +80,15 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		cube2.setPosition(0f, -3, 0);
 		renderables.add(cube2);
 		renderables.add(new Triangle(false));
-		square = new Square(true, "textures/star.png");
+		square = new Square(true, "textures/star.png", new float[] {1,0,0,1});
 		square.setPosition(0, 3, 0);
 		transparentRenderables.add(square);		
+		square2 = new Square(true, "textures/star.png", new float[] {0,1,0,1});
+		square2.setPosition(0, 3, 0);
+		transparentRenderables.add(square2);		
+		square3 = new Square(true, "textures/star.png", new float[] {0,0,1,1});
+		square3.setPosition(0, 3, 0);
+		transparentRenderables.add(square3);		
 		
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
@@ -86,17 +96,29 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		
 		pointLight = new PointLight();
 		square.getPosition(pointLight.position);
-		pointLight.color.set(1,1,1,1);
-		pointLight.intensity = 0.75f;
+		pointLight.color.set(1,0,0,1);
+		pointLight.intensity = 0.95f;
 		
+		pointLight2 = new PointLight();
+		square2.getPosition(pointLight2.position);
+		pointLight2.color.set(0,1,0,1);
+		pointLight2.intensity = 0.95f;
+
+		pointLight3 = new PointLight();
+		square3.getPosition(pointLight3.position);
+		pointLight3.color.set(0,0,1,1);
+		pointLight3.intensity = 0.95f;
+
 		DirectionalLight directionalLight = new DirectionalLight();
 		directionalLight.direction.set(0,0,1);
-		directionalLight.color.set(0.0f,0.0f,0.5f,1);
+		directionalLight.color.set(0.0f,0.0f,1f,1);
 		
 		lights = new Lights();
-		lights.ambientLight.set(0.0f, 0.25f, 0.0f, 1);
-//		lights.add(pointLight);
-		lights.add(directionalLight);
+//		lights.ambientLight.set(0.125f, 0.125f, 0.125f, 1);
+//		lights.add(directionalLight);
+		lights.add(pointLight);
+		lights.add(pointLight2);
+		lights.add(pointLight3);
 	}
 
 	@Override
@@ -146,8 +168,14 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
         cube.setRotation(animationRatio * 360, 1, 0, 0);
         cube2.setRotation(animationRatio * 360, 0, 1, 0);
         
-        square.setPosition(0f, (offset * 7f), (offset2 * 7f));
+        square.setPosition(0f, (offset * 5f), (offset2 * 5f));
 		square.getPosition(pointLight.position);
+
+        square2.setPosition((offset * 5f), 0f, (offset2 * 5f));
+		square2.getPosition(pointLight2.position);
+        
+		square3.setPosition((offset * 5f), (offset2 * 5f), 0f);
+		square3.getPosition(pointLight3.position);
 
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);

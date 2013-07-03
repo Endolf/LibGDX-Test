@@ -129,8 +129,8 @@ public abstract class Shape implements Renderable {
 		}
 		
 		finalFragmentShaderCode += "#define AMBIENT_LIGHT\n";
-		finalFragmentShaderCode += "#define MAX_DIR_LIGHTS 1\n";
-		finalFragmentShaderCode += "#define MAX_POINT_LIGHTS 1\n";
+		finalFragmentShaderCode += "#define MAX_DIR_LIGHTS 3\n";
+		finalFragmentShaderCode += "#define MAX_POINT_LIGHTS 3\n";
 		
 		String vertexShaderCode = Gdx.files.classpath("shaders/vert.glsl").readString("UTF-8");
 		String fragmentShaderCode = Gdx.files.classpath("shaders/frag.glsl").readString("UTF-8");
@@ -181,7 +181,7 @@ public abstract class Shape implements Renderable {
 		for(int i=0;i<lights.pointLights.size;i++) {
 			PointLight light = lights.pointLights.get(i);
 			shader.setUniformf("uPointLights.colour[" + i + "]", light.color);
-			shader.setUniformf("uPointLights.attenuation[" + i + "]", 1 - light.intensity);
+			shader.setUniformf("uPointLights.intensity[" + i + "]", light.intensity);
 			shader.setUniformf("uPointLights.position[" + i + "]", light.position);
 		}
 		
