@@ -114,8 +114,8 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		directionalLight.color.set(0.0f,0.0f,1f,1);
 		
 		lights = new Lights();
-//		lights.ambientLight.set(0.125f, 0.125f, 0.125f, 1);
-//		lights.add(directionalLight);
+		lights.ambientLight.set(0.125f, 0.125f, 0.125f, 1);
+		lights.add(directionalLight);
 		lights.add(pointLight);
 		lights.add(pointLight2);
 		lights.add(pointLight3);
