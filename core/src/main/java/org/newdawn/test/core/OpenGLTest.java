@@ -8,11 +8,25 @@ import java.util.List;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.graphics.g3d.lights.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.lights.Lights;
 import com.badlogic.gdx.graphics.g3d.lights.PointLight;
+import com.badlogic.gdx.graphics.g3d.materials.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.materials.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.materials.Material;
+import com.badlogic.gdx.graphics.g3d.materials.TextureAttribute;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -25,22 +39,28 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 	
 	private Camera camera;
 	private float cameraXRot = -45,cameraYRot = 45;
-	private Cube cube;
-	private Cube cube2;
-	private Shape square;
-	private Shape square2;
-	private Shape square3;
-	private List<Renderable> renderables = new ArrayList<Renderable>();
-	private List<Renderable> transparentRenderables = new ArrayList<Renderable>();
-	private Comparator<Renderable> depthComparator;
+	private ModelInstance cube;
+	private ModelInstance cube2;
+	private Decal square;
+	private Decal square2;
+	private Decal square3;
+	private List<ModelInstance> renderables = new ArrayList<ModelInstance>();
+	private List<ModelInstance> transparentRenderables = new ArrayList<ModelInstance>();
 	private BitmapFont font;
 	private SpriteBatch spriteBatch;
+	private DecalBatch decalBatch;
 	private PointLight pointLight;
 	private PointLight pointLight2;
 	private PointLight pointLight3;
 	private Lights lights;
 	
 	private Vector3 tempVector01 = new Vector3();
+	private Model cubeModel;
+	private Model triangleModel;
+	private ModelBatch modelBatch;
+	private Texture cubeTexture;
+	private Texture starTexture;
+	private CameraGroupStrategy decalBatchStrategy;
 	
 	@Override
 	public void create () {
@@ -57,60 +77,63 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		camera.near = 1;
 		camera.far = 3000;
 
-		depthComparator = new Comparator<Renderable>() {
-
-			@Override
-			public int compare(Renderable o1, Renderable o2) {
-				float o2len2 = o2.getPosition(tempVector01).sub(camera.position).len2();
-				float o1len2 = o1.getPosition(tempVector01).sub(camera.position).len2();
-				if(o2len2 < o1len2) {
-					return -1;
-				} else if(o2len2 > o1len2) {
-					return 1;
-				} else {
-					return 0;
-				}
-			}
-		};
+		modelBatch = new ModelBatch();
 		
-		cube = new Cube("textures/nd-logo.png", false, new float[]{1,1,1,1});
-		cube.setPosition(0f, 0, -3);
+		ModelBuilder modelBuilder = new ModelBuilder();
+		ColorAttribute diffuseWhite = ColorAttribute.createDiffuse(1, 1, 1, 1);
+		ColorAttribute ambientWhite = new ColorAttribute(ColorAttribute.Ambient, 1, 1, 1, 1);
+		ColorAttribute diffuseGreen = ColorAttribute.createDiffuse(0, 1, 0, 1);
+		ColorAttribute ambientGreen = new ColorAttribute(ColorAttribute.Ambient, 0, 1, 0, 1);
+		
+		cubeTexture = new Texture(Gdx.files.classpath("textures/nd-logo.png"), Format.RGBA8888, true);
+		TextureAttribute cubeTextureAttribute = TextureAttribute.createDiffuse(cubeTexture);
+		
+		starTexture = new Texture(Gdx.files.classpath("textures/star.png"), Format.RGBA8888, true);
+		
+		cubeModel = modelBuilder.createBox(1, 1, 1, new Material(diffuseWhite, ambientWhite, cubeTextureAttribute), Usage.Position | Usage.Normal | Usage.TextureCoordinates);
+		triangleModel = modelBuilder.createTriangle(0.622008459f, new Material(diffuseGreen, ambientGreen), Usage.Position | Usage.Normal);
+		
+		cube = new ModelInstance(cubeModel);
+		cube.transform.setTranslation(tempVector01.set(0f, 0, -3));
 		renderables.add(cube);
-		cube2 = new Cube("textures/nd-logo.png", false, new float[]{1,1,1,1});
-		cube2.setPosition(0f, -3, 0);
+		cube2 = new ModelInstance(cubeModel);
+		cube2.transform.setTranslation(tempVector01.set(0f, -3, 0));
 		renderables.add(cube2);
-		renderables.add(new Triangle(false));
-		square = new Square(true, "textures/star.png", new float[] {1,0,0,1});
+		renderables.add(new ModelInstance(triangleModel));
+		square = Decal.newDecal(1,1,new TextureRegion(starTexture), true);
 		square.setPosition(0, 3, 0);
-		transparentRenderables.add(square);		
-		square2 = new Square(true, "textures/star.png", new float[] {0,1,0,1});
+		square2 = Decal.newDecal(1,1,new TextureRegion(starTexture), true);
 		square2.setPosition(0, 3, 0);
-		transparentRenderables.add(square2);		
-		square3 = new Square(true, "textures/star.png", new float[] {0,0,1,1});
+		square3 = Decal.newDecal(1,1,new TextureRegion(starTexture), true);
 		square3.setPosition(0, 3, 0);
-		transparentRenderables.add(square3);		
 		
+		decalBatchStrategy = new CameraGroupStrategy(camera);
+		decalBatch = new DecalBatch(decalBatchStrategy);
+		decalBatch.add(square);
+		decalBatch.add(square2);
+		decalBatch.add(square3);
+
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
 		font.setColor(0, 1, 0, 1);
 		
 		pointLight = new PointLight();
-		square.getPosition(pointLight.position);
 		pointLight.color.set(1,0,0,1);
-		pointLight.intensity = 0.95f;
+		pointLight.intensity = 10f;
+		pointLight.position.set(square.getPosition());
 		
 		pointLight2 = new PointLight();
-		square2.getPosition(pointLight2.position);
 		pointLight2.color.set(0,1,0,1);
-		pointLight2.intensity = 0.95f;
+		pointLight2.intensity = 10f;
+		pointLight2.position.set(square2.getPosition());
 
 		pointLight3 = new PointLight();
-		square3.getPosition(pointLight3.position);
 		pointLight3.color.set(0,0,1,1);
-		pointLight3.intensity = 0.95f;
+		pointLight3.intensity = 10f;
+		pointLight3.position.set(square3.getPosition());
 
 		DirectionalLight directionalLight = new DirectionalLight();
-		directionalLight.direction.set(0,0,1);
+		directionalLight.direction.set(0,0,-1);
 		directionalLight.color.set(0.0f,0.0f,1f,1);
 		
 		lights = new Lights();
@@ -164,29 +187,31 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		
 		float offset = MathUtils.sin(animationRatio * (MathUtils.PI2));
 		float offset2 = MathUtils.cos(animationRatio * (MathUtils.PI2));
-        cube.setPosition((offset * 3f),0,-3);
-        cube.setRotation(animationRatio * 360, 1, 0, 0);
-        cube2.setRotation(animationRatio * 360, 0, 1, 0);
+        cube.transform.setToRotation(animationRatio * 360, 1, 0, 0);
+        cube.transform.setTranslation(tempVector01.set((offset * 3f),0,-3));
+        cube2.transform.setToRotation(animationRatio * 360, 0, 1, 0);
+		cube2.transform.setTranslation(tempVector01.set(0f, -3, 0));
         
         square.setPosition(0f, (offset * 5f), (offset2 * 5f));
-		square.getPosition(pointLight.position);
+        pointLight.position.set(square.getPosition());
 
         square2.setPosition((offset * 5f), 0f, (offset2 * 5f));
-		square2.getPosition(pointLight2.position);
+        pointLight2.position.set(square2.getPosition());
         
 		square3.setPosition((offset * 5f), (offset2 * 5f), 0f);
-		square3.getPosition(pointLight3.position);
+		pointLight3.position.set(square3.getPosition());
 
 		Gdx.gl20.glEnable(GL20.GL_BLEND);
 		Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        for(Renderable renderable : renderables) {
-        	renderable.render(camera.view, camera.projection, lights);
-        }
+		
+		modelBatch.begin(camera);
+		modelBatch.render(renderables, lights);
         
-        Collections.sort(transparentRenderables, depthComparator);
-        for(Renderable renderable : transparentRenderables) {
-        	renderable.render(camera.view, camera.projection, lights);
-        }
+//        Collections.sort(transparentRenderables, depthComparator);
+		modelBatch.render(transparentRenderables, lights);
+		modelBatch.end();
+		
+		decalBatch.flush();
         
         spriteBatch.begin();
         font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 5, font.getCapHeight() + 5);
@@ -211,9 +236,16 @@ public class OpenGLTest implements ApplicationListener, InputProcessor {
 		
 		if(spriteBatch!=null) spriteBatch.dispose();
 		
-        for(Renderable renderable : renderables) {
-        	renderable.dispose();
-        }
+		if(cubeModel!=null) cubeModel.dispose();
+		if(triangleModel!=null) triangleModel.dispose();
+		
+		if(modelBatch!=null) modelBatch.dispose();
+		
+		if(cubeTexture!=null) cubeTexture.dispose();
+		if(starTexture!=null) starTexture.dispose();
+		
+		if(decalBatch!=null) decalBatch.dispose();
+		if(decalBatchStrategy!=null) decalBatchStrategy.dispose();
 	}
 
 	@Override
